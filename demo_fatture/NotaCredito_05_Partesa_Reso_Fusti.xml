@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<p:FatturaElettronica versione="FPR12" xmlns:p="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.2">
+  <FatturaElettronicaHeader>
+    <DatiTrasmissione>
+      <IdTrasmittente>
+        <IdPaese>IT</IdPaese>
+        <IdCodice>05012340158</IdCodice>
+      </IdTrasmittente>
+      <ProgressivoInvio>PAR2026-NC0089</ProgressivoInvio>
+      <FormatoTrasmissione>FPR12</FormatoTrasmissione>
+      <CodiceDestinatario>SUBM70N</CodiceDestinatario>
+    </DatiTrasmissione>
+    <CedentePrestatore>
+      <DatiAnagrafici>
+        <IdFiscaleIVA>
+          <IdPaese>IT</IdPaese>
+          <IdCodice>05012340158</IdCodice>
+        </IdFiscaleIVA>
+        <CodiceFiscale>05012340158</CodiceFiscale>
+        <Anagrafica>
+          <Denominazione>PARTESA S.P.A.</Denominazione>
+        </Anagrafica>
+      </DatiAnagrafici>
+      <Sede>
+        <Indirizzo>Via Edison 15</Indirizzo>
+        <CAP>20090</CAP>
+        <Comune>Assago</Comune>
+        <Provincia>MI</Provincia>
+        <Nazione>IT</Nazione>
+      </Sede>
+    </CedentePrestatore>
+    <CessionarioCommittente>
+      <DatiAnagrafici>
+        <IdFiscaleIVA>
+          <IdPaese>IT</IdPaese>
+          <IdCodice>02562290227</IdCodice>
+        </IdFiscaleIVA>
+        <CodiceFiscale>02562290227</CodiceFiscale>
+        <Anagrafica>
+          <Denominazione>GESTIONI LOCALI S.R.L. - KRUGEL</Denominazione>
+        </Anagrafica>
+      </DatiAnagrafici>
+      <Sede>
+        <Indirizzo>Via Nazionale</Indirizzo>
+        <CAP>38015</CAP>
+        <Comune>Lavis</Comune>
+        <Provincia>TV</Provincia>
+        <Nazione>IT</Nazione>
+      </Sede>
+    </CessionarioCommittente>
+  </FatturaElettronicaHeader>
+  <FatturaElettronicaBody>
+    <DatiGenerali>
+      <DatiGeneraliDocumento>
+        <TipoDocumento>TD04</TipoDocumento>
+        <Divisa>EUR</Divisa>
+        <Data>2026-11-17</Data>
+        <Numero>NC-2026/0112</Numero>
+        <ImportoTotaleDocumento>107.60</ImportoTotaleDocumento>
+      </DatiGeneraliDocumento>
+      <DatiTrasporto>
+        <DatiIndirizzoResa>
+          <Indirizzo>Via Nazionale (Krügel)</Indirizzo>
+          <CAP>38015</CAP>
+          <Comune>Lavis</Comune>
+          <Provincia>TV</Provincia>
+        </DatiIndirizzoResa>
+      </DatiTrasporto>
+    </DatiGenerali>
+    <DatiBeniServizi>
+      <DettaglioLinee>
+        <NumeroLinea>1</NumeroLinea>
+        <CodiceArticolo>
+          <CodiceTipo>FORN</CodiceTipo>
+          <CodiceValore>BIR-HEIN-30L</CodiceValore>
+        </CodiceArticolo>
+        <Descrizione>STORNO PER RESO HEINEKEN BIRRA FUSTO 30LT</Descrizione>
+        <Quantita>1.00</Quantita>
+        <UnitaMisura>FUSTO</UnitaMisura>
+        <PrezzoUnitario>88.20</PrezzoUnitario>
+        <PrezzoTotale>88.20</PrezzoTotale>
+        <AliquotaIVA>22.00</AliquotaIVA>
+      </DettaglioLinee>
+    </DatiBeniServizi>
+  </FatturaElettronicaBody>
+</p:FatturaElettronica>

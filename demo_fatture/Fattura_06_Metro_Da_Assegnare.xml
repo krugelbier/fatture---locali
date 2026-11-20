@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<p:FatturaElettronica versione="FPR12" xmlns:p="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.2">
+  <FatturaElettronicaHeader>
+    <DatiTrasmissione>
+      <IdTrasmittente>
+        <IdPaese>IT</IdPaese>
+        <IdCodice>00816390153</IdCodice>
+      </IdTrasmittente>
+      <ProgressivoInvio>METRO2026-44021</ProgressivoInvio>
+      <FormatoTrasmissione>FPR12</FormatoTrasmissione>
+      <CodiceDestinatario>SUBM70N</CodiceDestinatario>
+    </DatiTrasmissione>
+    <CedentePrestatore>
+      <DatiAnagrafici>
+        <IdFiscaleIVA>
+          <IdPaese>IT</IdPaese>
+          <IdCodice>00816390153</IdCodice>
+        </IdFiscaleIVA>
+        <CodiceFiscale>00816390153</CodiceFiscale>
+        <Anagrafica>
+          <Denominazione>METRO ITALIA CASH AND CARRY S.P.A.</Denominazione>
+        </Anagrafica>
+      </DatiAnagrafici>
+      <Sede>
+        <Indirizzo>Via XXV Aprile 23</Indirizzo>
+        <CAP>20097</CAP>
+        <Comune>San Donato Milanese</Comune>
+        <Provincia>MI</Provincia>
+        <Nazione>IT</Nazione>
+      </Sede>
+    </CedentePrestatore>
+    <CessionarioCommittente>
+      <DatiAnagrafici>
+        <IdFiscaleIVA>
+          <IdPaese>IT</IdPaese>
+          <IdCodice>02562290227</IdCodice>
+        </IdFiscaleIVA>
+        <CodiceFiscale>02562290227</CodiceFiscale>
+        <Anagrafica>
+          <Denominazione>GESTIONI LOCALI S.R.L.</Denominazione>
+        </Anagrafica>
+      </DatiAnagrafici>
+      <Sede>
+        <Indirizzo>Via Tamarisi 2</Indirizzo>
+        <CAP>38015</CAP>
+        <Comune>Lavis</Comune>
+        <Provincia>TV</Provincia>
+        <Nazione>IT</Nazione>
+      </Sede>
+    </CessionarioCommittente>
+  </FatturaElettronicaHeader>
+  <FatturaElettronicaBody>
+    <DatiGenerali>
+      <DatiGeneraliDocumento>
+        <TipoDocumento>TD01</TipoDocumento>
+        <Divisa>EUR</Divisa>
+        <Data>2026-11-17</Data>
+        <Numero>FT-METRO-09881</Numero>
+        <ImportoTotaleDocumento>309.88</ImportoTotaleDocumento>
+      </DatiGeneraliDocumento>
+    </DatiGenerali>
+    <DatiBeniServizi>
+      <DettaglioLinee>
+        <NumeroLinea>1</NumeroLinea>
+        <CodiceArticolo>
+          <CodiceTipo>EAN</CodiceTipo>
+          <CodiceValore>8001234567890</CodiceValore>
+        </CodiceArticolo>
+        <Descrizione>TOVAGLIOLI BAR 2 VELI BIANCHI CT 2000PZ</Descrizione>
+        <Quantita>4.00</Quantita>
+        <UnitaMisura>CT</UnitaMisura>
+        <PrezzoUnitario>19.50</PrezzoUnitario>
+        <PrezzoTotale>78.00</PrezzoTotale>
+        <AliquotaIVA>22.00</AliquotaIVA>
+      </DettaglioLinee>
+      <DettaglioLinee>
+        <NumeroLinea>2</NumeroLinea>
+        <CodiceArticolo>
+          <CodiceTipo>EAN</CodiceTipo>
+          <CodiceValore>8009876543210</CodiceValore>
+        </CodiceArticolo>
+        <Descrizione>OLIO EXTRAVERGINE DI OLIVA LATTA 5LT</Descrizione>
+        <Quantita>2.00</Quantita>
+        <UnitaMisura>LT</UnitaMisura>
+        <PrezzoUnitario>46.00</PrezzoUnitario>
+        <PrezzoTotale>92.00</PrezzoTotale>
+        <AliquotaIVA>10.00</AliquotaIVA>
+      </DettaglioLinee>
+      <DettaglioLinee>
+        <NumeroLinea>3</NumeroLinea>
+        <CodiceArticolo>
+          <CodiceTipo>FORN</CodiceTipo>
+          <CodiceValore>DET-LAV-IND</CodiceValore>
+        </CodiceArticolo>
+        <Descrizione>DETERGENTE LAVASTOVIGLIE BAR TANICA 12KG</Descrizione>
+        <Quantita>3.00</Quantita>
+        <UnitaMisura>PZ</UnitaMisura>
+        <PrezzoUnitario>28.00</PrezzoUnitario>
+        <PrezzoTotale>84.00</PrezzoTotale>
+        <AliquotaIVA>22.00</AliquotaIVA>
+      </DettaglioLinee>
+    </DatiBeniServizi>
+  </FatturaElettronicaBody>
+</p:FatturaElettronica>

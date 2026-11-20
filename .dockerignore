@@ -1,0 +1,28 @@
+# Esclusioni per build Docker
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Database locale e backup (vanno montati tramite Volume persistente)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.bak
+backups/
+
+# File di ambiente con segreti locali
+.env
+.env.local
+
+# File di test e script di utilità Windows
+test_*.py
+avvia.bat
+README_SPOSTATO.txt
+
+# Directory IDE / editor
+.vscode/
+.idea/
+.git/
+.gitignore

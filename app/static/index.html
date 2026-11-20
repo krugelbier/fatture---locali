@@ -1,0 +1,2045 @@
+<!DOCTYPE html>
+<html lang="it" class="h-full bg-slate-50">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Fatture Locali &amp; HACCP | Krügel – Lavis &amp; Cafè L’Incontro – Pergine</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            krugel: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309'
+            },
+            incontro: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    [x-cloak] { display: none !important; }
+    .badge-krugel { background-color: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .badge-incontro { background-color: #d1fae5; color: #047857; border: 1px solid #a7f3d0; }
+    .badge-unassigned { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+    .badge-mixed { background-color: #e0e7ff; color: #4338ca; border: 1px solid #c7d2fe; }
+    .badge-nc { background-color: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+
+    /* Stile per banner avvisi scaduti HACCP con pulsazione lenta */
+    @keyframes alertPulseSlow {
+      0%, 100% {
+        background-color: #fef2f2;
+        border-color: #ef4444;
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+      }
+      50% {
+        background-color: #fee2e2;
+        border-color: #dc2626;
+        box-shadow: 0 0 14px 2px rgba(220, 38, 38, 0.25);
+      }
+    }
+    .alert-banner-pulse {
+      animation: alertPulseSlow 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .alert-banner-pulse {
+        animation: none !important;
+        background-color: #fee2e2 !important;
+        border-color: #dc2626 !important;
+        box-shadow: none !important;
+      }
+    }
+
+    /* Stile per la stampa termica etichette HACCP */
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #printable-label-wrapper, #printable-label-wrapper * {
+        visibility: visible !important;
+      }
+      #printable-label-wrapper {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        display: block !important;
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .haccp-printable-single-label {
+        page-break-after: always !important;
+        break-after: page !important;
+        box-sizing: border-box !important;
+        margin: 0 auto 4mm auto !important;
+      }
+      .haccp-printable-single-label:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
+      }
+      @page {
+        margin: 0;
+        size: auto;
+      }
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col text-slate-800 antialiased select-none">
+
+  <!-- ======================================================== -->
+  <!-- 1. SCHERMATA LOGIN (ACCEDI) -->
+  <!-- ======================================================== -->
+  <div id="screen-login" class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md text-center px-4">
+      <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-600 to-emerald-600 flex items-center justify-center shadow-xl mb-4">
+        <i data-lucide="shield-check" class="w-9 h-9 text-white"></i>
+      </div>
+      <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Fatture Locali &amp; HACCP</h2>
+      <p class="mt-2 text-sm text-slate-300">
+        <span class="text-amber-400 font-semibold">Krügel – Lavis</span> &bull; <span class="text-emerald-400 font-semibold">Cafè L’Incontro – Pergine</span>
+      </p>
+      <p class="text-xs text-slate-400 mt-1">P.IVA 02562290227</p>
+    </div>
+
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4">
+      <div class="bg-white py-8 px-6 shadow-2xl rounded-2xl sm:px-10 text-slate-800">
+        <form onsubmit="handleLoginSubmit(event)" class="space-y-5">
+          <div>
+            <label for="login-username" class="block text-sm font-semibold text-slate-700">Nome utente</label>
+            <div class="mt-1 relative">
+              <input id="login-username" type="text" autocomplete="username" required placeholder="es. admin o cucina.lavis"
+                class="w-full text-base sm:text-sm px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+          </div>
+
+          <div>
+            <label for="login-password" class="block text-sm font-semibold text-slate-700">Password</label>
+            <div class="mt-1 relative">
+              <input id="login-password" type="password" autocomplete="current-password" required placeholder="••••••••"
+                class="w-full text-base sm:text-sm px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+          </div>
+
+          <div id="login-error-msg" class="p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 hidden"></div>
+
+          <div>
+            <button type="submit" id="btn-login-submit"
+              class="w-full flex justify-center py-3.5 px-4 rounded-xl text-base font-bold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 shadow-lg shadow-indigo-600/30 transition-all cursor-pointer">
+              Accedi
+            </button>
+          </div>
+        </form>
+
+        <div class="mt-6 pt-5 border-t border-slate-100 text-xs text-slate-500 text-center space-y-1">
+          <p class="font-medium text-slate-700">Account di prova preconfigurati:</p>
+          <p><span class="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-800 font-semibold">admin</span> / <span class="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-800 font-semibold">admin</span> (Amministratore completo)</p>
+          <p><span class="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-800 font-semibold">cucina.lavis</span> / <span class="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-800 font-semibold">cucina</span> (Solo HACCP Lavis)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 2. SCHERMATA SCEGLI IL LOCALE -->
+  <!-- ======================================================== -->
+  <div id="screen-choose-venue" class="min-h-full flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-100 hidden">
+    <div class="max-w-2xl mx-auto w-full">
+      
+      <div class="flex items-center justify-between mb-8 pb-4 border-b border-slate-200">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold">
+            <i data-lucide="map-pin" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h1 class="text-xl font-bold text-slate-900">Scegli il locale</h1>
+            <p class="text-xs text-slate-500">Seleziona il punto vendita su cui operare</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span id="venue-user-name" class="text-xs font-semibold text-slate-700 bg-white px-3 py-1.5 rounded-lg border border-slate-200">Utente</span>
+          <button onclick="handleLogout()" class="text-xs text-rose-600 hover:text-rose-800 font-semibold px-3 py-1.5 rounded-lg border border-rose-200 hover:bg-rose-50 transition-colors flex items-center space-x-1">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+            <span>Esci</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="venue-buttons-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Generato dinamicamente in base ai locali autorizzati per l'account -->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 3. SCHERMATA SCEGLI LA SEZIONE -->
+  <!-- ======================================================== -->
+  <div id="screen-choose-section" class="min-h-full flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-100 hidden">
+    <div class="max-w-2xl mx-auto w-full">
+      
+      <div class="flex items-center justify-between mb-8 pb-4 border-b border-slate-200">
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Locale attivo:</span>
+            <span id="section-venue-badge" class="px-2.5 py-1 rounded-md text-sm font-bold badge-krugel">Krügel – Lavis</span>
+          </div>
+          <h1 class="text-2xl font-black text-slate-900 mt-1">Scegli la sezione</h1>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <button id="btn-change-venue-from-section" onclick="navigateToChooseVenue()" class="text-xs text-slate-700 bg-white hover:bg-slate-50 font-semibold px-3 py-2 rounded-lg border border-slate-300 transition-colors flex items-center space-x-1 hidden">
+            <i data-lucide="repeat" class="w-3.5 h-3.5"></i>
+            <span>Cambia locale</span>
+          </button>
+          <button onclick="handleLogout()" class="text-xs text-rose-600 hover:text-rose-800 font-semibold px-3 py-2 rounded-lg border border-rose-200 hover:bg-rose-50 transition-colors flex items-center space-x-1">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+            <span>Esci</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="section-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- Scheda 1: Fatture e Prezzi -->
+        <div id="card-section-invoices" onclick="enterSection('invoices')"
+          class="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-indigo-600 hover:shadow-xl transition-all cursor-pointer group flex flex-col justify-between">
+          <div>
+            <div class="w-14 h-14 rounded-2xl bg-indigo-50 group-hover:bg-indigo-600 text-indigo-600 group-hover:text-white flex items-center justify-center transition-all mb-4 shadow-sm">
+              <i data-lucide="receipt-text" class="w-8 h-8"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">Fatture e prezzi</h3>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+              Consultazione fatture XML/P7M/ZIP, analisi acquisti degli ultimi 6 mesi, prezzi medi ponderati, minimi, massimi e conversioni confezioni.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-indigo-600">
+            <span>Accedi alla sezione</span>
+            <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"></i>
+          </div>
+        </div>
+
+        <!-- Scheda 2: HACCP -->
+        <div id="card-section-haccp" onclick="enterSection('haccp')"
+          class="bg-white p-6 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 hover:shadow-xl transition-all cursor-pointer group flex flex-col justify-between">
+          <div>
+            <div class="w-14 h-14 rounded-2xl bg-emerald-50 group-hover:bg-emerald-600 text-emerald-600 group-hover:text-white flex items-center justify-center transition-all mb-4 shadow-sm">
+              <i data-lucide="shield-check" class="w-8 h-8"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">HACCP</h3>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+              Autocontrollo igienico-sanitario: stampa etichette alimenti con durata 48h, temperature frigoriferi (C/NC), cambio olio friggitrici e pulizia settimanale cappa.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-emerald-600">
+            <span>Accedi alla sezione</span>
+            <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"></i>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 4. CONTENITORE PRINCIPALE APP (SEZIONI OPERATIVE) -->
+  <!-- ======================================================== -->
+  <div id="screen-main-app" class="min-h-full flex flex-col hidden">
+
+    <!-- Top Navigation Bar Comune -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Riga 1: Sede Attiva e Bottoni Navigazione Globale -->
+        <div class="flex items-center justify-between h-16">
+          
+          <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-600 via-indigo-600 to-emerald-600 flex items-center justify-center text-white shadow-sm flex-shrink-0">
+              <i data-lucide="store" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="text-xs font-semibold text-slate-500 uppercase">Locale attivo:</span>
+                <span id="active-venue-name-header" class="text-base font-extrabold text-slate-900">Krügel – Lavis</span>
+              </div>
+              <p id="active-section-name-header" class="text-xs font-semibold text-indigo-600">Sezione: Fatture e prezzi</p>
+            </div>
+          </div>
+
+          <!-- Pulsanti d'azione superiori -->
+          <div class="flex items-center space-x-2 sm:space-x-3">
+            
+            <!-- Torna alle sezioni -->
+            <button onclick="navigateToChooseSection()" class="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center space-x-1.5 transition-colors">
+              <i data-lucide="layout-grid" class="w-4 h-4 text-slate-500"></i>
+              <span class="hidden sm:inline">Torna alle sezioni</span>
+            </button>
+
+            <!-- Cambia locale (visibile per chi accede a entrambi) -->
+            <button id="btn-change-venue-header" onclick="navigateToChooseVenue()" class="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center space-x-1.5 transition-colors hidden">
+              <i data-lucide="repeat" class="w-4 h-4 text-slate-500"></i>
+              <span class="hidden sm:inline">Cambia locale</span>
+            </button>
+
+            <!-- Gestione utenti (visibile SOLO per amministratore) -->
+            <button id="btn-manage-users-header" onclick="openUsersManagementModal()" class="px-3 py-2 rounded-xl text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 flex items-center space-x-1.5 transition-colors hidden">
+              <i data-lucide="users" class="w-4 h-4"></i>
+              <span class="hidden sm:inline">Gestione utenti</span>
+            </button>
+
+            <!-- Esci (per tutti) -->
+            <button onclick="handleLogout()" class="px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 flex items-center space-x-1 transition-colors">
+              <i data-lucide="log-out" class="w-4 h-4"></i>
+              <span>Esci</span>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Riga 2: Tab Navigazione Specifici per la Sezione Attiva -->
+        <!-- Sotto-tab Fatture e Prezzi -->
+        <nav id="nav-tabs-invoices" class="flex space-x-6 -mb-px hidden">
+          <button onclick="switchInvoicesTab('analytics')" id="tab-btn-analytics" class="tab-link py-3 px-1 border-b-2 font-semibold text-sm flex items-center space-x-2 border-indigo-600 text-indigo-600">
+            <i data-lucide="trending-up" class="w-4 h-4"></i>
+            <span>Analisi Acquisti</span>
+          </button>
+          <button onclick="switchInvoicesTab('invoices')" id="tab-btn-invoices" class="tab-link py-3 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+            <span>Fatture</span>
+            <span id="nav-count-invoices" class="ml-1.5 px-2 py-0.5 text-xs rounded-full bg-slate-100 text-slate-600">0</span>
+          </button>
+          <button onclick="switchInvoicesTab('unassigned')" id="tab-btn-unassigned" class="tab-link py-3 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800">
+            <i data-lucide="alert-circle" class="w-4 h-4"></i>
+            <span>Da Assegnare</span>
+            <span id="nav-count-unassigned" class="ml-1.5 px-2 py-0.5 text-xs rounded-full bg-rose-100 text-rose-700 font-bold hidden">0</span>
+          </button>
+          <button onclick="switchInvoicesTab('settings')" id="tab-btn-settings" class="tab-link py-3 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800">
+            <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+            <span>Configurazione &amp; Sedi</span>
+          </button>
+        </nav>
+
+        <!-- Sotto-tab HACCP (Tablet-Friendly) -->
+        <nav id="nav-tabs-haccp" class="flex space-x-2 sm:space-x-4 -mb-px overflow-x-auto pb-1 hidden">
+          <button onclick="switchHaccpTab('labels')" id="tab-btn-haccp-labels" class="haccp-tab-link py-3 px-2 sm:px-3 border-b-2 font-bold text-sm flex items-center space-x-2 border-emerald-600 text-emerald-700 flex-shrink-0">
+            <i data-lucide="tag" class="w-4 h-4"></i>
+            <span>🏷️ Etichette Alimenti</span>
+          </button>
+          <button onclick="switchHaccpTab('temp')" id="tab-btn-haccp-temp" class="haccp-tab-link py-3 px-2 sm:px-3 border-b-2 font-semibold text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800 flex-shrink-0">
+            <i data-lucide="thermometer-snowflake" class="w-4 h-4"></i>
+            <span>❄️ Temperature Frigo</span>
+          </button>
+          <button onclick="switchHaccpTab('oil')" id="tab-btn-haccp-oil" class="haccp-tab-link py-3 px-2 sm:px-3 border-b-2 font-semibold text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800 flex-shrink-0">
+            <i data-lucide="flame" class="w-4 h-4"></i>
+            <span>🍟 Cambio Olio</span>
+          </button>
+          <button onclick="switchHaccpTab('hood')" id="tab-btn-haccp-hood" class="haccp-tab-link py-3 px-2 sm:px-3 border-b-2 font-semibold text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800 flex-shrink-0">
+            <i data-lucide="fan" class="w-4 h-4"></i>
+            <span>💨 Pulizia Cappa</span>
+          </button>
+          <button onclick="switchHaccpTab('cleaning_walls')" id="tab-btn-haccp-cleaning_walls" class="haccp-tab-link py-3 px-2 sm:px-3 border-b-2 font-semibold text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800 flex-shrink-0">
+            <i data-lucide="layers" class="w-4 h-4"></i>
+            <span>🧱 Pulizia Muri</span>
+          </button>
+          <button onclick="switchHaccpTab('cleaning_windows')" id="tab-btn-haccp-cleaning_windows" class="haccp-tab-link py-3 px-2 sm:px-3 border-b-2 font-semibold text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800 flex-shrink-0">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span>🪟 Pulizia Vetri</span>
+          </button>
+          <button onclick="switchHaccpTab('cleaning_warehouse')" id="tab-btn-haccp-cleaning_warehouse" class="haccp-tab-link py-3 px-2 sm:px-3 border-b-2 font-semibold text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800 flex-shrink-0">
+            <i data-lucide="package" class="w-4 h-4"></i>
+            <span>📦 Pulizia Magazzino</span>
+          </button>
+          <button onclick="switchHaccpTab('pests')" id="tab-btn-haccp-pests" class="haccp-tab-link py-3 px-2 sm:px-3 border-b-2 font-semibold text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800 flex-shrink-0">
+            <i data-lucide="shield-alert" class="w-4 h-4"></i>
+            <span>🐜 Monitoraggio Infestanti</span>
+          </button>
+        </nav>
+
+      </div>
+    </header>
+
+    <!-- Notification Toast Container -->
+    <div id="toast-container" class="fixed top-20 right-6 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+      <!-- ======================================================== -->
+      <!-- CONTENUTI SEZIONE 1: FATTURE E PREZZI -->
+      <!-- ======================================================== -->
+      <div id="section-invoices-content" class="space-y-6 hidden">
+        
+        <!-- Header Azioni Sezione Fatture -->
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">Fatture e Controllo Prezzi</h2>
+            <p class="text-xs text-slate-500">Analisi prezzi medi ponderati, minimo e massimo ultimi sei mesi per <span id="invoices-venue-label" class="font-bold text-slate-800">Krügel – Lavis</span></p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <!-- Pulsante Importa XML / ZIP (condizionato da permesso fatture.import) -->
+            <button id="btn-open-upload-modal" onclick="openUploadModal()" class="inline-flex items-center space-x-1.5 px-3.5 py-2 text-xs font-bold rounded-xl text-white bg-slate-900 hover:bg-slate-800 shadow-sm transition-all hidden">
+              <i data-lucide="upload" class="w-4 h-4"></i>
+              <span>Importa XML / ZIP</span>
+            </button>
+            <!-- Dati demo (riservato admin) -->
+            <button id="btn-load-demo" onclick="loadDemoData()" class="inline-flex items-center space-x-1.5 px-3 py-2 text-xs font-semibold rounded-xl text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors hidden">
+              <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
+              <span>Dati Demo</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 1.1 VISTA ANALISI ACQUISTI -->
+        <div id="invoices-subview-analytics" class="space-y-6">
+          <!-- Top KPI Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Spesa Netta (ultimi 6 mesi)</span>
+                <i data-lucide="wallet" class="w-5 h-5 text-indigo-500"></i>
+              </div>
+              <p id="kpi-total-spend" class="text-2xl font-bold text-slate-900 mt-2">€ 0,00</p>
+              <p class="text-xs text-slate-500 mt-1">Prezzi netti di IVA e sconti riga</p>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border border-amber-200 shadow-xs bg-gradient-to-br from-white to-amber-50/40">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-amber-800 uppercase tracking-wider">🍕 Krügel – Lavis</span>
+                <span class="px-2 py-0.5 rounded text-xs font-semibold badge-krugel">Lavis (38015)</span>
+              </div>
+              <p id="kpi-spend-krugel" class="text-2xl font-bold text-amber-900 mt-2">€ 0,00</p>
+              <p id="kpi-krugel-sub" class="text-xs text-amber-700 mt-1">0 fatture</p>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border border-emerald-200 shadow-xs bg-gradient-to-br from-white to-emerald-50/40">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-emerald-800 uppercase tracking-wider">☕ Cafè L’Incontro</span>
+                <span class="px-2 py-0.5 rounded text-xs font-semibold badge-incontro">Pergine (38057)</span>
+              </div>
+              <p id="kpi-spend-incontro" class="text-2xl font-bold text-emerald-900 mt-2">€ 0,00</p>
+              <p id="kpi-incontro-sub" class="text-xs text-emerald-700 mt-1">0 fatture</p>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Prodotti Mappati</span>
+                <i data-lucide="layers" class="w-5 h-5 text-indigo-500"></i>
+              </div>
+              <p id="kpi-mapped-products" class="text-2xl font-bold text-slate-900 mt-2">0</p>
+              <p id="kpi-unmapped-alert" class="text-xs text-amber-600 mt-1 font-medium">0 descrizioni da mappare</p>
+            </div>
+          </div>
+
+          <!-- Filtri Bar -->
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-3">
+              <div class="relative w-64">
+                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+                <input type="text" id="analytics-search" oninput="debounce(loadAnalytics, 300)()" placeholder="Cerca prodotto o fornitore..." class="w-full pl-9 pr-3 py-1.5 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              </div>
+
+              <select id="analytics-category-filter" onchange="loadAnalytics()" class="py-1.5 px-3 text-sm rounded-lg border border-slate-200 bg-white">
+                <option value="">Tutte le Categorie</option>
+              </select>
+
+              <div class="flex items-center space-x-1.5 text-xs text-slate-600 bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-lg">
+                <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-500"></i>
+                <span>Periodo:</span>
+                <select id="analytics-months" onchange="loadAnalytics()" class="bg-transparent font-semibold text-slate-800 focus:outline-none">
+                  <option value="3">Ultimi 3 Mesi</option>
+                  <option value="6" selected>Ultimi 6 Mesi (Standard)</option>
+                  <option value="12">Ultimi 12 Mesi</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="text-xs text-slate-500">
+              <span>* Clicca su qualsiasi riga per aprire la tracciabilità delle fatture originali</span>
+            </div>
+          </div>
+
+          <!-- Tabella Analisi -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                  <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                    <th class="py-3 px-4">Prodotto Canonico &amp; Categoria</th>
+                    <th class="py-3 px-4">Fornitore</th>
+                    <th class="py-3 px-4">Sedi Coinvolte</th>
+                    <th class="py-3 px-4 text-right">Quantità Fatturata (Base)</th>
+                    <th class="py-3 px-4 text-right">Prezzo Min</th>
+                    <th class="py-3 px-4 text-right bg-indigo-50/50 text-indigo-900 font-bold">P. Medio Ponderato</th>
+                    <th class="py-3 px-4 text-right">Prezzo Max</th>
+                    <th class="py-3 px-4 text-right">Variazione %</th>
+                    <th class="py-3 px-4 text-center">Fatture</th>
+                  </tr>
+                </thead>
+                <tbody id="analytics-table-body" class="divide-y divide-slate-100">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1.2 VISTA FATTURE -->
+        <div id="invoices-subview-invoices" class="space-y-6 hidden">
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-3">
+              <div class="relative w-64">
+                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+                <input type="text" id="invoices-search" oninput="debounce(loadInvoices, 300)()" placeholder="Cerca numero o fornitore..." class="w-full pl-9 pr-3 py-1.5 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              </div>
+              <select id="invoices-status-filter" onchange="loadInvoices()" class="py-1.5 px-3 text-sm rounded-lg border border-slate-200 bg-white">
+                <option value="">Tutti gli stati di assegnazione</option>
+                <option value="COMPLETA">Assegnazione Completa</option>
+                <option value="PARZIALE">Assegnazione Parziale</option>
+                <option value="DA_ASSEGNARE">Da Assegnare</option>
+              </select>
+              <select id="invoices-type-filter" onchange="loadInvoices()" class="py-1.5 px-3 text-sm rounded-lg border border-slate-200 bg-white">
+                <option value="">Tutti i Tipi Documento</option>
+                <option value="TD01">TD01 - Fattura Ordinaria</option>
+                <option value="TD04">TD04 - Nota di Credito</option>
+                <option value="TD24">TD24 - Fattura Differita</option>
+              </select>
+            </div>
+            <div class="text-xs text-slate-500">
+              Mostrate <span id="invoices-count-label" class="font-bold text-slate-800">0</span> fatture
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                  <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                    <th class="py-3 px-4">Data &amp; N. Doc</th>
+                    <th class="py-3 px-4">Tipo</th>
+                    <th class="py-3 px-4">Fornitore Cedente</th>
+                    <th class="py-3 px-4">Sede Assegnata</th>
+                    <th class="py-3 px-4">Indirizzo Resa Rilevato</th>
+                    <th class="py-3 px-4 text-right">Imponibile</th>
+                    <th class="py-3 px-4 text-right">Totale Fattura</th>
+                    <th class="py-3 px-4 text-center">Righe</th>
+                    <th class="py-3 px-4 text-center">Azioni</th>
+                  </tr>
+                </thead>
+                <tbody id="invoices-table-body" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1.3 VISTA DA ASSEGNARE -->
+        <div id="invoices-subview-unassigned" class="space-y-6 hidden">
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start space-x-3 text-xs text-amber-800">
+            <i data-lucide="help-circle" class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5"></i>
+            <div>
+              <p class="font-bold text-sm">Assegnazione Manuale Rapida:</p>
+              <p class="mt-0.5 leading-relaxed">Le fatture con recapito a <strong>Lavis</strong> vengono assegnate a Krügel, a <strong>Pergine</strong> a Cafè L’Incontro. Qui puoi completare con un clic le fatture o le righe con recapito da definire.</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+            <div class="p-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+              <h3 class="font-bold text-slate-800 text-sm">Fatture Intere in Attesa di Assegnazione</h3>
+              <span id="unassigned-invoices-badge" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800">0</span>
+            </div>
+            <div id="unassigned-invoices-list" class="divide-y divide-slate-100"></div>
+          </div>
+
+          <div class="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+            <div class="p-4 border-b border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 class="font-bold text-slate-800 text-sm">Righe di Consegne Miste da Assegnare</h3>
+                <p class="text-xs text-slate-500">Seleziona più righe e assegna in blocco alla sede</p>
+              </div>
+              <div class="flex items-center space-x-2">
+                <button onclick="batchAssignLines(1)" class="px-3 py-1.5 text-xs font-bold rounded-lg text-amber-900 bg-amber-100 hover:bg-amber-200 border border-amber-300">
+                  🍕 Assegna a Krügel
+                </button>
+                <button onclick="batchAssignLines(2)" class="px-3 py-1.5 text-xs font-bold rounded-lg text-emerald-900 bg-emerald-100 hover:bg-emerald-200 border border-emerald-300">
+                  ☕ Assegna a Cafè L’Incontro
+                </button>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                  <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                    <th class="py-3 px-4 w-10 text-center">
+                      <input type="checkbox" id="check-all-unassigned" onchange="toggleSelectAllUnassigned(this)">
+                    </th>
+                    <th class="py-3 px-4">Fattura &amp; Data</th>
+                    <th class="py-3 px-4">Fornitore</th>
+                    <th class="py-3 px-4">DDT Rif.</th>
+                    <th class="py-3 px-4">Descrizione Riga</th>
+                    <th class="py-3 px-4 text-right">Quantità</th>
+                    <th class="py-3 px-4 text-right">Tot. Netto</th>
+                    <th class="py-3 px-4 text-center">Assegna Subito</th>
+                  </tr>
+                </thead>
+                <tbody id="unassigned-lines-table-body" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1.4 VISTA CONFIGURAZIONE FATTURE & SEDI -->
+        <div id="invoices-subview-settings" class="space-y-6 hidden">
+          <!-- Sedi & Regole -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
+            <h3 class="text-base font-bold text-slate-900">Sedi di Consegna Configurate</h3>
+            <div id="sedi-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+          </div>
+
+          <!-- Conversioni Confezioni -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-base font-bold text-slate-900">Regole di Conversione Confezioni e Alias Fornitori</h3>
+                <p class="text-xs text-slate-500">Permette di calcolare e confrontare i prezzi in litri, bottiglie o kg omogenei</p>
+              </div>
+              <button onclick="openNewMappingModal()" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">
+                + Nuova Conversione
+              </button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
+                  <tr>
+                    <th class="py-2.5 px-3">Prodotto Canonico</th>
+                    <th class="py-2.5 px-3">Unità Base</th>
+                    <th class="py-2.5 px-3">Pattern Descrizione Fornitore</th>
+                    <th class="py-2.5 px-3">Confezione Originale</th>
+                    <th class="py-2.5 px-3 text-right">Fattore Conversione</th>
+                    <th class="py-2.5 px-3">Fornitore Specifico</th>
+                  </tr>
+                </thead>
+                <tbody id="mappings-table-body" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- CONTENUTI SEZIONE 2: HACCP (TABLET-OPTIMIZED) -->
+      <!-- ======================================================== -->
+      <div id="section-haccp-content" class="space-y-6 hidden">
+
+        <!-- BANNER DEGLI AVVISI SCADUTI HACCP (Pulsazione Lenta / Rosso Fisso se ridotto movimento) -->
+        <div id="haccp-alerts-banner" class="hidden space-y-3">
+          <!-- Popolato dinamicamente da updateHaccpAlerts() -->
+        </div>
+
+        <!-- 2.1 TAB ETICHETTE ALIMENTI -->
+        <div id="haccp-subview-labels" class="space-y-6">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Modulo Compilazione Etichetta (Tablet Friendly) -->
+            <div class="lg:col-span-7 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+              <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center space-x-2">
+                  <span class="text-2xl">🏷️</span>
+                  <div>
+                    <h3 class="text-lg font-bold text-slate-900">Nuovo Lotto &amp; Etichette Alimenti Preparati</h3>
+                    <p class="text-xs text-slate-500">Generazione automatica lotto interno e numerazione pezzi (es. 1 di 12)</p>
+                  </div>
+                </div>
+                <button onclick="openNewHaccpProductModal()" class="text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-lg transition-colors">
+                  + Configura Prodotti/Durate
+                </button>
+              </div>
+
+              <form onsubmit="handleCreateLabelSubmit(event)" class="space-y-4">
+                <!-- Operatore e Lotto Originale -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Preparato da (Operatore) *</label>
+                    <input type="text" id="label-preparato-da" required placeholder="es. Marco Rossi / Cuoco" class="w-full text-base px-3.5 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500">
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Lotto originale (Materia prima) *</label>
+                    <input type="text" id="label-lotto-originale" required placeholder="es. L24-899/B o 44521#A" oninput="updateLabelPreviewFromForm()" class="w-full text-base px-3.5 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 font-mono">
+                  </div>
+                </div>
+
+                <!-- Prodotto Alimentare -->
+                <div>
+                  <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Prodotto Alimentare *</label>
+                  <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                    <select id="label-select-product" onchange="handleLabelProductSelect(this)" class="sm:col-span-8 text-base px-3.5 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 bg-white">
+                      <option value="">-- Seleziona dal piano HACCP --</option>
+                    </select>
+                    <input type="text" id="label-custom-product" oninput="updateLabelPreviewFromForm()" placeholder="Oppure scrivi prodotto..." class="sm:col-span-4 text-base px-3.5 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500">
+                  </div>
+                  <div id="label-duration-badge" class="mt-1.5 text-xs text-emerald-800 font-semibold bg-emerald-50 p-2 rounded-lg border border-emerald-200 flex items-center justify-between">
+                    <span>Durata configurata HACCP: <strong id="label-duration-hours">48</strong> ore effettive</span>
+                    <span class="text-[11px] text-emerald-600">Calcolo esatto scadenza</span>
+                  </div>
+                </div>
+
+                <!-- Numero di Pezzi del Lotto e Lotto Interno Automatico -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Numero di pezzi del lotto *</label>
+                    <div class="flex items-center space-x-2">
+                      <button type="button" onclick="adjustPiecesInput(-1)" class="w-12 h-12 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-xl text-slate-700 flex items-center justify-center border border-slate-300 active:scale-95 transition-all">-</button>
+                      <input type="number" min="1" step="1" id="label-numero-pezzi" required value="1" oninput="updateLabelPreviewFromForm()" class="w-full text-center text-lg font-bold py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500">
+                      <button type="button" onclick="adjustPiecesInput(1)" class="w-12 h-12 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-xl text-slate-700 flex items-center justify-center border border-slate-300 active:scale-95 transition-all">+</button>
+                    </div>
+                    <span class="text-[11px] text-slate-500 mt-1 block">Genera etichette numerate da 1 a N pezzi</span>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Lotto interno HACCP</label>
+                    <div class="py-3 px-3.5 bg-slate-100 rounded-xl border border-slate-200 text-slate-700 flex flex-col justify-center">
+                      <div class="flex items-center justify-between">
+                        <span id="label-lotto-interno-preview" class="font-mono font-black text-slate-900 text-sm">LAV-000001 (auto)</span>
+                        <span class="text-[10px] text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded-full">Server Univoco</span>
+                      </div>
+                      <span class="text-[10px] text-slate-500 mt-0.5">Assegnato progressivo per locale</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Date Preparazione e Scadenza -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Data e ora di preparazione *</label>
+                    <input type="datetime-local" id="label-dt-prep" required onchange="recalculateLabelExpiry()" class="w-full text-base px-3.5 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 bg-white">
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Data e ora di scadenza *</label>
+                    <input type="datetime-local" id="label-dt-exp" required class="w-full text-base px-3.5 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 bg-white font-bold text-slate-900">
+                  </div>
+                </div>
+
+                <!-- Dimensioni Etichetta (Configurabili in mm) -->
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+                  <div class="flex items-center space-x-2">
+                    <i data-lucide="printer" class="w-4 h-4 text-slate-500"></i>
+                    <span class="font-bold text-slate-700">Formato Etichetta (mm):</span>
+                  </div>
+                  <div class="flex items-center space-x-3">
+                    <div class="flex items-center space-x-1">
+                      <span>Larghezza:</span>
+                      <input type="number" id="label-width-mm" value="60" min="30" max="150" class="w-16 px-2 py-1 rounded border border-slate-300 text-center font-bold" onchange="updateLabelPreviewDimensions()">
+                      <span>mm</span>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                      <span>Altezza:</span>
+                      <input type="number" id="label-height-mm" value="40" min="20" max="150" class="w-16 px-2 py-1 rounded border border-slate-300 text-center font-bold" onchange="updateLabelPreviewDimensions()">
+                      <span>mm</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Pulsanti Azione Tablet-Friendly -->
+                <div class="pt-2 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <button type="button" onclick="updateLabelPreviewFromForm()" class="w-full py-3.5 px-4 rounded-xl text-sm font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 transition-colors flex items-center justify-center space-x-1.5">
+                    <i data-lucide="eye" class="w-4 h-4"></i>
+                    <span>Aggiorna Anteprima</span>
+                  </button>
+
+                  <button type="submit" id="btn-print-label" class="sm:col-span-2 w-full py-3.5 px-4 rounded-xl text-base font-bold text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 shadow-md shadow-emerald-600/30 transition-all flex items-center justify-center space-x-2">
+                    <i data-lucide="printer" class="w-5 h-5"></i>
+                    <span id="btn-save-print-label-text">Salva e Stampa Etichette</span>
+                  </button>
+                </div>
+              </form>
+
+              <!-- Avviso Bluetooth -->
+              <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-800 flex items-start space-x-2">
+                <i data-lucide="bluetooth" class="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5"></i>
+                <p><strong>Collegamento Bluetooth:</strong> predisposto per la stampa rapida su stampante termica portatile Bluetooth ed emissione etichetta per ciascun pezzo.</p>
+              </div>
+            </div>
+
+            <!-- Anteprima Etichetta Visiva Reale & Stampa di Prova -->
+            <div class="lg:col-span-5 space-y-4">
+              <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col items-center justify-between min-h-[380px]">
+                <div class="w-full flex items-center justify-between pb-3 border-b border-slate-100 text-xs">
+                  <span class="font-bold text-slate-700 uppercase">Anteprima Stampa Etichetta</span>
+                  <button onclick="executeTestPrint()" class="px-2.5 py-1 rounded bg-slate-100 text-slate-700 hover:bg-slate-200 font-semibold border border-slate-200 flex items-center space-x-1">
+                    <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i>
+                    <span>Stampa di Prova</span>
+                  </button>
+                </div>
+
+                <!-- Box Fisico Etichetta con proporzioni in mm -->
+                <div class="my-4 p-4 bg-slate-100/60 rounded-xl w-full flex items-center justify-center">
+                  <div id="label-preview-box" class="bg-white border-2 border-dashed border-slate-400 shadow-lg rounded-sm p-4 flex flex-col justify-between text-slate-900 transition-all"
+                    style="width: 270px; min-height: 195px;">
+                    <div>
+                      <div class="text-[10px] font-bold tracking-widest uppercase text-slate-500 border-b border-slate-200 pb-1 flex justify-between items-center">
+                        <span id="prev-venue-name">Krügel – Lavis</span>
+                        <span id="prev-lotto-interno" class="font-mono text-emerald-800 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">LAV-000001</span>
+                      </div>
+                      <h4 id="prev-prodotto" class="text-base font-black text-slate-900 mt-2 leading-tight uppercase">Sugo al Pomodoro Fresco</h4>
+                      <div class="text-[11px] text-slate-600 mt-1 flex justify-between items-center">
+                        <span>Prep. da: <strong id="prev-operatore" class="text-slate-900 font-bold">Marco Rossi</strong></span>
+                        <span id="prev-pezzo-num" class="font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded text-[10px]">Pezzo 1 di 1</span>
+                      </div>
+                      <div class="text-[10px] text-slate-500 mt-1">
+                        Lotto originale: <strong id="prev-lotto-originale" class="text-slate-800 font-mono font-bold">LOT-ORIG-01</strong>
+                      </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-300 space-y-1 text-xs mt-2">
+                      <div class="flex justify-between items-center">
+                        <span class="text-[10px] uppercase text-slate-500 font-bold">Preparazione:</span>
+                        <strong id="prev-dt-prep" class="font-mono text-slate-900 text-xs">18/11/2026 10:00</strong>
+                      </div>
+                      <div class="flex justify-between items-center bg-slate-100 p-1.5 rounded">
+                        <span class="text-[10px] uppercase text-slate-900 font-black">SCADENZA:</span>
+                        <strong id="prev-dt-exp" class="font-mono text-slate-900 font-black text-xs">20/11/2026 10:00</strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Box Risultato Ultimo Lotto Creato e Tasto Stampa Tutte -->
+                <div id="label-save-result-box" class="w-full p-3.5 bg-emerald-50 border border-emerald-300 rounded-xl space-y-2 hidden">
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="font-bold text-emerald-900">Lotto salvato: <strong id="res-lotto-interno" class="font-mono">LAV-000001</strong></span>
+                    <span id="res-lotto-count" class="font-bold text-emerald-800">12 etichette create</span>
+                  </div>
+                  <button type="button" id="btn-print-all-saved" onclick="printAllLabelsFromLastBatch()" class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm flex items-center justify-center space-x-2">
+                    <i data-lucide="printer" class="w-4 h-4"></i>
+                    <span id="btn-print-all-saved-text">Stampa tutte le 12 etichette</span>
+                  </button>
+                </div>
+
+                <p class="text-[11px] text-slate-400 text-center">La stampa include esclusivamente il contenuto dell'etichetta senza margini del browser.</p>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Storico Etichette e Lotti Stampati con Ricerca -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden space-y-3">
+            <div class="p-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50">
+              <div>
+                <h4 class="font-bold text-sm text-slate-800">Storico Lotti &amp; Etichette Registrate</h4>
+                <p class="text-xs text-slate-500">Ristampa dell'intero lotto o dei singoli pezzi mantenendo numerazione e scadenze originali</p>
+              </div>
+              <span id="labels-history-count" class="text-xs text-slate-500 font-bold bg-white px-2.5 py-1 rounded-lg border border-slate-200">0 registrazioni</span>
+            </div>
+
+            <!-- Filtri Ricerca Storico Lotti -->
+            <div class="px-4 py-2 flex flex-wrap items-center gap-2 text-xs">
+              <div class="relative flex-1 min-w-[200px]">
+                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5"></i>
+                <input type="text" id="labels-search-input" oninput="debounce(loadHaccpLabelsHistory, 300)()" placeholder="Cerca lotto interno, originale, prodotto o operatore..." class="w-full pl-8 pr-3 py-1.5 rounded-lg border border-slate-300">
+              </div>
+              <div class="flex items-center space-x-1">
+                <span class="text-slate-500">Dal:</span>
+                <input type="date" id="labels-date-from" onchange="loadHaccpLabelsHistory()" class="px-2 py-1 rounded-lg border border-slate-300">
+              </div>
+              <div class="flex items-center space-x-1">
+                <span class="text-slate-500">Al:</span>
+                <input type="date" id="labels-date-to" onchange="loadHaccpLabelsHistory()" class="px-2 py-1 rounded-lg border border-slate-300">
+              </div>
+              <button onclick="resetLabelSearchFilters()" class="px-2.5 py-1 text-slate-600 hover:bg-slate-100 rounded-lg border border-slate-200">
+                Azzera filtri
+              </button>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-slate-100/70 text-slate-600 font-semibold uppercase tracking-wider">
+                    <th class="py-2.5 px-4 font-mono">Lotto Interno</th>
+                    <th class="py-2.5 px-4 font-mono">Lotto Orig.</th>
+                    <th class="py-2.5 px-4">Prodotto</th>
+                    <th class="py-2.5 px-4">Preparato Da</th>
+                    <th class="py-2.5 px-4">Preparazione &amp; Scadenza</th>
+                    <th class="py-2.5 px-4 text-center">Pezzi</th>
+                    <th class="py-2.5 px-4 text-right">Ristampa</th>
+                  </tr>
+                </thead>
+                <tbody id="labels-history-table-body" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2.2 TAB TEMPERATURE FRIGORIFERI -->
+        <div id="haccp-subview-temp" class="space-y-6 hidden">
+          <!-- Avviso tab-specifico per frigoriferi scaduti -->
+          <div id="tab-alert-temp" class="hidden"></div>
+
+          <!-- Header Frigoriferi -->
+          <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+            <div>
+              <h3 class="text-base font-bold text-slate-900">Controllo Temperature Frigoriferi e Celle</h3>
+              <p class="text-xs text-slate-500">Registrazione giornaliera conforme HACCP con verifica limiti</p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <button id="btn-add-fridge" onclick="openNewFridgeModal()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 transition-colors hidden">
+                + Gestisci Frigoriferi
+              </button>
+            </div>
+          </div>
+
+          <!-- Cards Frigoriferi Attivi con Ultimo Controllo -->
+          <div id="fridges-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+          <!-- Modale / Form Rapido Registra Controllo Temperatura (Tablet Touch) -->
+          <div id="card-record-temp" class="bg-white p-6 rounded-2xl border-2 border-emerald-200 shadow-sm space-y-4">
+            <h4 class="font-bold text-base text-slate-900 flex items-center space-x-2">
+              <i data-lucide="thermometer" class="w-5 h-5 text-emerald-600"></i>
+              <span>Registra Nuovo Controllo Temperatura</span>
+            </h4>
+
+            <form onsubmit="handleRecordTempSubmit(event)" class="space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Frigorifero / Cella *</label>
+                  <select id="temp-select-fridge" required onchange="handleFridgeSelectionForTemp(this)" class="w-full text-base px-3 py-2.5 rounded-xl border border-slate-300 bg-white"></select>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Operatore *</label>
+                  <input type="text" id="temp-operatore" required placeholder="Nome operatore" class="w-full text-base px-3 py-2.5 rounded-xl border border-slate-300">
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Temperatura Rilevata (°C) *</label>
+                  <div class="flex items-center space-x-2">
+                    <button type="button" onclick="adjustTempInput(-0.5)" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-lg text-slate-700 flex items-center justify-center border border-slate-300">-</button>
+                    <input type="number" step="0.1" id="temp-valore" required placeholder="es. 3.2" class="w-full text-center text-lg font-bold py-2 rounded-xl border border-slate-300">
+                    <button type="button" onclick="adjustTempInput(+0.5)" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-lg text-slate-700 flex items-center justify-center border border-slate-300">+</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Grandi Pulsanti Touch per Esito (C - Conforme / NC - Non Conforme) -->
+              <div>
+                <label class="block text-xs font-bold uppercase text-slate-600 mb-2">Esito Verifica HACCP *</label>
+                <div class="grid grid-cols-2 gap-4">
+                  <button type="button" id="btn-esito-c" onclick="setTempEsito('CONFORME')"
+                    class="py-4 px-6 rounded-2xl text-lg font-black border-3 border-emerald-500 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition-all flex items-center justify-center space-x-2 shadow-xs">
+                    <i data-lucide="check-circle" class="w-6 h-6 text-emerald-600"></i>
+                    <span>C – Conforme</span>
+                  </button>
+
+                  <button type="button" id="btn-esito-nc" onclick="setTempEsito('NON_CONFORME')"
+                    class="py-4 px-6 rounded-2xl text-lg font-black border-2 border-slate-300 bg-white text-slate-600 hover:bg-rose-50 hover:text-rose-700 transition-all flex items-center justify-center space-x-2">
+                    <i data-lucide="alert-triangle" class="w-6 h-6 text-rose-500"></i>
+                    <span>NC – Non conforme</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Campo Azione Correttiva (visibile con NC) -->
+              <div id="temp-nc-action-box" class="p-4 bg-rose-50 border border-rose-200 rounded-xl space-y-2 hidden">
+                <label class="block text-xs font-bold uppercase text-rose-900">Azione Correttiva Adottata (Obbligatoria con NC) *</label>
+                <textarea id="temp-azione-correttiva" rows="2" placeholder="es. Regolato termostato, riscontrata porta accostata, spostati alimenti deperibili in Cella 2..." class="w-full text-sm p-3 rounded-lg border border-rose-300"></textarea>
+              </div>
+
+              <div class="flex justify-end pt-2">
+                <button type="submit" class="w-full sm:w-auto py-3.5 px-8 rounded-xl text-base font-bold text-white bg-slate-900 hover:bg-slate-800 transition-colors shadow-md">
+                  Salva Registrazione Controllo
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Storico Temperature -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+            <div class="p-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50">
+              <h4 class="font-bold text-sm text-slate-800">Storico Registrazioni Temperature</h4>
+              <div class="flex items-center space-x-2">
+                <select id="temp-history-fridge-filter" onchange="loadTemperatureHistory()" class="text-xs px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white">
+                  <option value="">Tutti i frigoriferi</option>
+                </select>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-slate-100/70 text-slate-600 font-semibold uppercase tracking-wider">
+                    <th class="py-2.5 px-4">Data &amp; Ora</th>
+                    <th class="py-2.5 px-4">Frigorifero / Cella</th>
+                    <th class="py-2.5 px-4 text-center">Temperatura Rilevata</th>
+                    <th class="py-2.5 px-4 text-center">Esito</th>
+                    <th class="py-2.5 px-4">Azione Correttiva</th>
+                    <th class="py-2.5 px-4">Operatore</th>
+                  </tr>
+                </thead>
+                <tbody id="temp-history-table-body" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2.3 TAB CAMBIO OLIO FRIGGITRICI -->
+        <div id="haccp-subview-oil" class="space-y-6 hidden">
+          <!-- Avviso tab-specifico per friggitrici scadute -->
+          <div id="tab-alert-oil" class="hidden"></div>
+
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+            <div>
+              <h3 class="text-base font-bold text-slate-900">Monitoraggio e Cambio Olio Friggitrici</h3>
+              <p class="text-xs text-slate-500">Gestione indipendente dei cambi per Friggitrice 1 e Friggitrice 2 (anche in giorni e orari diversi)</p>
+            </div>
+            <button id="btn-config-fryers" onclick="openConfigureFryersModal()" class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 hidden">
+              Rinomina Friggitrici
+            </button>
+          </div>
+
+          <!-- Cards Indipendenti Friggitrici -->
+          <div id="fryers-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+
+          <!-- Storico Cambi Olio -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+            <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+              <h4 class="font-bold text-sm text-slate-800">Registro Storico Cambi Olio</h4>
+              <span id="oil-history-count" class="text-xs text-slate-500">0 cambi</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-slate-100/70 text-slate-600 font-semibold uppercase tracking-wider">
+                    <th class="py-2.5 px-4">Friggitrice</th>
+                    <th class="py-2.5 px-4">Data Cambio</th>
+                    <th class="py-2.5 px-4">Ora</th>
+                    <th class="py-2.5 px-4">Operatore</th>
+                    <th class="py-2.5 px-4">Note / Tipologia Olio</th>
+                  </tr>
+                </thead>
+                <tbody id="oil-history-table-body" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2.4 TAB PULIZIA SETTIMANALE CAPPA -->
+        <div id="haccp-subview-hood" class="space-y-6 hidden">
+          <!-- Avviso tab-specifico per pulizia cappa scaduta -->
+          <div id="tab-alert-hood" class="hidden"></div>
+
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div class="flex items-center space-x-2">
+                <span class="text-2xl">💨</span>
+                <div>
+                  <h3 class="text-lg font-bold text-slate-900">Pulizia Settimanale Cappa di Aspirazione</h3>
+                  <p class="text-xs text-slate-500">Sanificazione filtri e canali di aspirazione fumi</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stato Settimana Corrente (Da fare o Eseguita) -->
+            <div id="hood-current-week-card" class="p-6 rounded-2xl border-2 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <!-- Riempito dinamicamente -->
+            </div>
+          </div>
+
+          <!-- Storico Settimane Precedenti -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+            <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+              <h4 class="font-bold text-sm text-slate-800">Storico Settimanale Pulizia Cappa</h4>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-slate-100/70 text-slate-600 font-semibold uppercase tracking-wider">
+                    <th class="py-2.5 px-4">Settimana di Riferimento</th>
+                    <th class="py-2.5 px-4">Data &amp; Ora Pulizia</th>
+                    <th class="py-2.5 px-4">Operatore</th>
+                    <th class="py-2.5 px-4">Note Operative</th>
+                  </tr>
+                </thead>
+                <tbody id="hood-history-table-body" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2.5 TAB PULIZIA MURI -->
+        <div id="haccp-subview-cleaning_walls" class="space-y-6 hidden">
+          <!-- Avviso tab-specifico muri -->
+          <div id="tab-alert-cleaning_walls" class="hidden"></div>
+
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div class="flex items-center space-x-3">
+                <span class="text-2xl">🧱</span>
+                <div>
+                  <h3 class="text-lg font-bold text-slate-900">Registro Pulizia Muri e Pareti Lavabili</h3>
+                  <p class="text-xs text-slate-500">Sanificazione periodica mensile (frequenza: 1 mese solare)</p>
+                </div>
+              </div>
+              <button id="btn-record-cleaning-walls" onclick="openRecordCleaningModal('muri')" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm flex items-center space-x-1.5 hidden">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                <span>+ Registra Pulizia Muri</span>
+              </button>
+            </div>
+
+            <!-- Stato Corrente Pulizia Muri -->
+            <div id="status-card-cleaning-muri" class="p-5 rounded-2xl border-2 transition-all">
+              <!-- Riempito dinamicamente -->
+            </div>
+          </div>
+
+          <!-- Storico Pulizia Muri -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+            <div class="p-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50">
+              <div class="flex items-center space-x-3">
+                <h4 class="font-bold text-sm text-slate-800">Storico Interventi Pulizia Muri</h4>
+                <span id="cleaning-muri-count" class="text-xs text-slate-500 font-bold bg-white px-2.5 py-0.5 rounded-lg border border-slate-200">0 registrazioni</span>
+              </div>
+              <div class="flex items-center space-x-2 text-xs">
+                <span class="text-slate-500 font-medium">Periodo:</span>
+                <input type="date" id="cleaning-muri-date-from" onchange="loadHaccpCleaning('muri')" class="px-2.5 py-1 text-xs rounded-lg border border-slate-300 bg-white">
+                <span class="text-slate-400">&rarr;</span>
+                <input type="date" id="cleaning-muri-date-to" onchange="loadHaccpCleaning('muri')" class="px-2.5 py-1 text-xs rounded-lg border border-slate-300 bg-white">
+                <button type="button" onclick="resetCleaningDateFilter('muri')" class="p-1 text-slate-400 hover:text-slate-600 rounded" title="Azzera filtro">
+                  <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-slate-100/70 text-slate-600 font-semibold uppercase tracking-wider">
+                    <th class="py-2.5 px-4">Data &amp; Ora</th>
+                    <th class="py-2.5 px-4">Operatore</th>
+                    <th class="py-2.5 px-4 font-bold text-slate-900">Prossima Scadenza (1 mese solare)</th>
+                    <th class="py-2.5 px-4">Note Operative</th>
+                  </tr>
+                </thead>
+                <tbody id="cleaning-muri-table-body" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2.6 TAB PULIZIA VETRI -->
+        <div id="haccp-subview-cleaning_windows" class="space-y-6 hidden">
+          <!-- Avviso tab-specifico vetri -->
+          <div id="tab-alert-cleaning_windows" class="hidden"></div>
+
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div class="flex items-center space-x-3">
+                <span class="text-2xl">🪟</span>
+                <div>
+                  <h3 class="text-lg font-bold text-slate-900">Registro Pulizia Vetri e Infissi</h3>
+                  <p class="text-xs text-slate-500">Pulizia e sanificazione finestre, vetrate e zanzariere (cadenza: 1 mese solare)</p>
+                </div>
+              </div>
+              <button id="btn-record-cleaning-windows" onclick="openRecordCleaningModal('vetri')" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm flex items-center space-x-1.5 hidden">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                <span>+ Registra Pulizia Vetri</span>
+              </button>
+            </div>
+
+            <!-- Stato Corrente Pulizia Vetri -->
+            <div id="status-card-cleaning-vetri" class="p-5 rounded-2xl border-2 transition-all">
+              <!-- Riempito dinamicamente -->
+            </div>
+          </div>
+
+          <!-- Storico Pulizia Vetri -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+            <div class="p-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50">
+              <div class="flex items-center space-x-3">
+                <h4 class="font-bold text-sm text-slate-800">Storico Interventi Pulizia Vetri</h4>
+                <span id="cleaning-vetri-count" class="text-xs text-slate-500 font-bold bg-white px-2.5 py-0.5 rounded-lg border border-slate-200">0 registrazioni</span>
+              </div>
+              <div class="flex items-center space-x-2 text-xs">
+                <span class="text-slate-500 font-medium">Periodo:</span>
+                <input type="date" id="cleaning-vetri-date-from" onchange="loadHaccpCleaning('vetri')" class="px-2.5 py-1 text-xs rounded-lg border border-slate-300 bg-white">
+                <span class="text-slate-400">&rarr;</span>
+                <input type="date" id="cleaning-vetri-date-to" onchange="loadHaccpCleaning('vetri')" class="px-2.5 py-1 text-xs rounded-lg border border-slate-300 bg-white">
+                <button type="button" onclick="resetCleaningDateFilter('vetri')" class="p-1 text-slate-400 hover:text-slate-600 rounded" title="Azzera filtro">
+                  <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-slate-100/70 text-slate-600 font-semibold uppercase tracking-wider">
+                    <th class="py-2.5 px-4">Data &amp; Ora</th>
+                    <th class="py-2.5 px-4">Operatore</th>
+                    <th class="py-2.5 px-4 font-bold text-slate-900">Prossima Scadenza (1 mese solare)</th>
+                    <th class="py-2.5 px-4">Note Operative</th>
+                  </tr>
+                </thead>
+                <tbody id="cleaning-vetri-table-body" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2.7 TAB PULIZIA MAGAZZINO -->
+        <div id="haccp-subview-cleaning_warehouse" class="space-y-6 hidden">
+          <!-- Avviso tab-specifico magazzino -->
+          <div id="tab-alert-cleaning_warehouse" class="hidden"></div>
+
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div class="flex items-center space-x-3">
+                <span class="text-2xl">📦</span>
+                <div>
+                  <h3 class="text-lg font-bold text-slate-900">Registro Pulizia Magazzino e Scorte</h3>
+                  <p class="text-xs text-slate-500">Igienizzazione scaffali, pavimenti e rotazione scorte (frequenza: settimanale - 7 giorni)</p>
+                </div>
+              </div>
+              <button id="btn-record-cleaning-warehouse" onclick="openRecordCleaningModal('magazzino')" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm flex items-center space-x-1.5 hidden">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                <span>+ Registra Pulizia Magazzino</span>
+              </button>
+            </div>
+
+            <!-- Stato Corrente Pulizia Magazzino -->
+            <div id="status-card-cleaning-magazzino" class="p-5 rounded-2xl border-2 transition-all">
+              <!-- Riempito dinamicamente -->
+            </div>
+          </div>
+
+          <!-- Storico Pulizia Magazzino -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+            <div class="p-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50">
+              <div class="flex items-center space-x-3">
+                <h4 class="font-bold text-sm text-slate-800">Storico Interventi Pulizia Magazzino</h4>
+                <span id="cleaning-magazzino-count" class="text-xs text-slate-500 font-bold bg-white px-2.5 py-0.5 rounded-lg border border-slate-200">0 registrazioni</span>
+              </div>
+              <div class="flex items-center space-x-2 text-xs">
+                <span class="text-slate-500 font-medium">Periodo:</span>
+                <input type="date" id="cleaning-magazzino-date-from" onchange="loadHaccpCleaning('magazzino')" class="px-2.5 py-1 text-xs rounded-lg border border-slate-300 bg-white">
+                <span class="text-slate-400">&rarr;</span>
+                <input type="date" id="cleaning-magazzino-date-to" onchange="loadHaccpCleaning('magazzino')" class="px-2.5 py-1 text-xs rounded-lg border border-slate-300 bg-white">
+                <button type="button" onclick="resetCleaningDateFilter('magazzino')" class="p-1 text-slate-400 hover:text-slate-600 rounded" title="Azzera filtro">
+                  <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-slate-100/70 text-slate-600 font-semibold uppercase tracking-wider">
+                    <th class="py-2.5 px-4">Data &amp; Ora</th>
+                    <th class="py-2.5 px-4">Operatore</th>
+                    <th class="py-2.5 px-4 font-bold text-slate-900">Prossima Scadenza (7 giorni)</th>
+                    <th class="py-2.5 px-4">Note Operative</th>
+                  </tr>
+                </thead>
+                <tbody id="cleaning-magazzino-table-body" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2.8 TAB MONITORAGGIO INFESTANTI -->
+        <div id="haccp-subview-pests" class="space-y-6 hidden">
+          <!-- Avviso tab-specifico infestanti -->
+          <div id="tab-alert-pests" class="hidden"></div>
+
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
+              <div class="flex items-center space-x-3">
+                <span class="text-2xl">🐜</span>
+                <div>
+                  <h3 class="text-lg font-bold text-slate-900">Monitoraggio Infestanti e Roditori</h3>
+                  <p class="text-xs text-slate-500">Ispezione visiva periodica delle 8 voci obbligatorie HACCP (cadenza: 1 mese solare)</p>
+                </div>
+              </div>
+              <button id="btn-start-pest-inspection" onclick="startNewPestInspection()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm flex items-center space-x-1.5 hidden">
+                <i data-lucide="clipboard-check" class="w-4 h-4"></i>
+                <span>+ Nuova Ispezione Infestanti</span>
+              </button>
+            </div>
+
+            <!-- Stato Corrente Ultimo Controllo Infestanti -->
+            <div id="status-card-pests" class="p-5 rounded-2xl border-2 transition-all">
+              <!-- Riempito dinamicamente -->
+            </div>
+          </div>
+
+          <!-- Wizard Ispezione Infestanti (sequenziale sulle 8 voci) -->
+          <div id="pest-wizard-container" class="bg-white p-6 rounded-2xl border-2 border-emerald-400 shadow-lg space-y-5 hidden">
+            <!-- Header wizard con progress bar -->
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <span id="pest-wizard-step-label" class="text-xs font-bold uppercase tracking-wider text-emerald-800">Voce 1 di 8</span>
+                <h4 id="pest-wizard-item-title" class="text-lg font-black text-slate-900 mt-0.5">Peli o piume</h4>
+              </div>
+              <div class="flex items-center space-x-3">
+                <span id="pest-wizard-progress-percent" class="text-xs font-bold text-slate-500">12%</span>
+                <button type="button" onclick="cancelPestInspection()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600">
+                  <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Barra di progresso grafica -->
+            <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+              <div id="pest-wizard-progress-bar" class="bg-emerald-600 h-full transition-all duration-300" style="width: 12.5%;"></div>
+            </div>
+
+            <!-- Step Domanda Singola (Voci 1..8) -->
+            <div id="pest-wizard-question-pane" class="space-y-4 py-2">
+              <p class="text-sm text-slate-700">Hai riscontrato tracce o presenza di <strong id="pest-wizard-item-target" class="text-slate-900 underline font-bold">Peli o piume</strong> nei locali e nelle aree di stoccaggio?</p>
+              
+              <!-- Grandi Pulsanti Touch Assenza / Presenza (nessuno preselezionato) -->
+              <div class="grid grid-cols-2 gap-4">
+                <button type="button" id="pest-btn-assenza" onclick="setPestAnswer('ASSENZA')" class="py-5 px-6 rounded-2xl text-lg font-black border-3 border-slate-300 bg-white text-slate-700 hover:border-emerald-500 hover:bg-emerald-50 transition-all flex items-center justify-center space-x-2">
+                  <i data-lucide="check-circle-2" class="w-6 h-6 text-emerald-600"></i>
+                  <span>Assenza</span>
+                </button>
+
+                <button type="button" id="pest-btn-presenza" onclick="setPestAnswer('PRESENZA')" class="py-5 px-6 rounded-2xl text-lg font-black border-3 border-slate-300 bg-white text-slate-700 hover:border-rose-500 hover:bg-rose-50 transition-all flex items-center justify-center space-x-2">
+                  <i data-lucide="alert-octagon" class="w-6 h-6 text-rose-600"></i>
+                  <span>Presenza</span>
+                </button>
+              </div>
+
+              <!-- Dettagli obbligatori se PRESENZA -->
+              <div id="pest-presence-fields" class="p-4 bg-rose-50 border border-rose-200 rounded-xl space-y-3 hidden">
+                <div class="text-xs font-bold text-rose-900 uppercase flex items-center space-x-1.5">
+                  <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-600"></i>
+                  <span>Dati rilevazione presenza (Obbligatori con Presenza)</span>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Zona del ritrovamento *</label>
+                  <input type="text" id="pest-input-zona" placeholder="es. Angolo retro-bancone, magazzino bibite, sotto pedana..." class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-rose-500">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Note e osservazioni</label>
+                  <input type="text" id="pest-input-note" placeholder="es. Trovate 2 piume vicino presa d'aria..." class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-slate-300 bg-white">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Azione intrapresa o da intraprendere *</label>
+                  <input type="text" id="pest-input-azione" placeholder="es. Pulito e igienizzato, verificata sigillatura griglia, contattato disinfestatore..." class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-rose-500">
+                </div>
+              </div>
+            </div>
+
+            <!-- Schermata Riepilogo Finale (Step 9) -->
+            <div id="pest-wizard-summary-pane" class="space-y-4 py-2 hidden">
+              <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+                <h5 class="text-sm font-bold text-emerald-900">Riepilogo Ispezione Mensile Infestanti</h5>
+                <p class="text-xs text-emerald-700">Verifica le 8 voci prima del salvataggio nel registro ufficiale HACCP.</p>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1">Operatore *</label>
+                  <input type="text" id="pest-summary-operator" required class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300">
+                </div>
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1">Data &amp; Ora Ispezione *</label>
+                  <input type="datetime-local" id="pest-summary-datetime" required class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300">
+                </div>
+              </div>
+
+              <div>
+                <label class="block font-bold text-slate-700 mb-1 text-xs">Note generali ispezione</label>
+                <textarea id="pest-summary-general-notes" rows="2" placeholder="Nessuna criticità rilevata nei locali..." class="w-full text-xs p-2.5 rounded-lg border border-slate-300"></textarea>
+              </div>
+
+              <!-- Tabella sintesi 8 voci -->
+              <div class="border border-slate-200 rounded-xl overflow-hidden">
+                <table class="w-full text-left text-xs">
+                  <thead class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+                    <tr>
+                      <th class="py-2.5 px-3">#</th>
+                      <th class="py-2.5 px-3">Voce Verificata</th>
+                      <th class="py-2.5 px-3 text-center">Esito</th>
+                      <th class="py-2.5 px-3">Zona / Azione</th>
+                      <th class="py-2.5 px-3 text-right">Modifica</th>
+                    </tr>
+                  </thead>
+                  <tbody id="pest-summary-items-body" class="divide-y divide-slate-100"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Pulsanti di navigazione del Wizard -->
+            <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+              <button type="button" id="pest-wizard-btn-prev" onclick="pestWizardPrevStep()" class="px-4 py-2.5 text-xs font-semibold rounded-xl text-slate-600 hover:bg-slate-100 transition-colors hidden">
+                &larr; Indietro
+              </button>
+              <div class="ml-auto flex items-center space-x-2">
+                <button type="button" onclick="cancelPestInspection()" class="px-4 py-2 text-xs font-semibold rounded-xl text-slate-600 hover:bg-slate-100 transition-colors">
+                  Annulla
+                </button>
+                <button type="button" id="pest-wizard-btn-next" onclick="pestWizardNextStep()" class="px-6 py-2.5 text-xs font-bold rounded-xl text-white bg-slate-900 hover:bg-slate-800 transition-all shadow-sm">
+                  Avanti &rarr;
+                </button>
+                <button type="button" id="pest-wizard-btn-save" onclick="savePestInspection()" class="px-6 py-2.5 text-xs font-bold rounded-xl text-white bg-emerald-600 hover:bg-emerald-700 transition-all shadow-md hidden flex items-center space-x-1.5">
+                  <i data-lucide="check" class="w-4 h-4"></i>
+                  <span>Salva verifica</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Storico Ispezioni Infestanti -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+            <div class="p-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50">
+              <div class="flex items-center space-x-3">
+                <h4 class="font-bold text-sm text-slate-800">Registro Storico Monitoraggio Infestanti</h4>
+                <span id="pests-history-count" class="text-xs text-slate-500 font-bold bg-white px-2.5 py-0.5 rounded-lg border border-slate-200">0 controlli</span>
+              </div>
+              <div class="flex items-center space-x-2 text-xs">
+                <span class="text-slate-500 font-medium">Periodo:</span>
+                <input type="date" id="pests-date-from" onchange="loadHaccpPests()" class="px-2.5 py-1 text-xs rounded-lg border border-slate-300 bg-white">
+                <span class="text-slate-400">&rarr;</span>
+                <input type="date" id="pests-date-to" onchange="loadHaccpPests()" class="px-2.5 py-1 text-xs rounded-lg border border-slate-300 bg-white">
+                <button type="button" onclick="resetPestsDateFilter()" class="p-1 text-slate-400 hover:text-slate-600 rounded" title="Azzera filtro">
+                  <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-slate-100/70 text-slate-600 font-semibold uppercase tracking-wider">
+                    <th class="py-2.5 px-4">Data &amp; Ora</th>
+                    <th class="py-2.5 px-4">Operatore</th>
+                    <th class="py-2.5 px-4 text-center">Esito Verifica</th>
+                    <th class="py-2.5 px-4 font-bold text-slate-900">Prossima Scadenza (1 mese solare)</th>
+                    <th class="py-2.5 px-4">Note</th>
+                    <th class="py-2.5 px-4 text-right">Dettaglio</th>
+                  </tr>
+                </thead>
+                <tbody id="pests-history-table-body" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODALS & DRAWERS (GESTIONE UTENTI, ETICHETTE, FRIGO, OLIO) -->
+  <!-- ======================================================== -->
+
+  <!-- MODAL: GESTIONE UTENTI & PERMESSI (RISERVATO ADMIN) -->
+  <div id="modal-manage-users" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden">
+      
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="shield" class="w-5 h-5 text-indigo-600"></i>
+          <div>
+            <h3 class="font-bold text-base text-slate-900">Pannello Gestione Utenti &amp; Permessi</h3>
+            <p class="text-xs text-slate-500">Configurazione account, password e permessi per ciascun locale</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-manage-users')" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-6 space-y-6">
+        
+        <!-- Tabella Utenti Esistenti -->
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="font-bold text-sm text-slate-800">Account Registrati nel Sistema</h4>
+            <button onclick="openCreateUserForm()" class="px-3.5 py-1.5 text-xs font-bold rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-xs">
+              + Crea Nuovo Account
+            </button>
+          </div>
+
+          <div class="overflow-x-auto border border-slate-200 rounded-xl">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
+                <tr>
+                  <th class="py-2.5 px-3">Username</th>
+                  <th class="py-2.5 px-3">Nome Completo</th>
+                  <th class="py-2.5 px-3">Ruolo / Admin</th>
+                  <th class="py-2.5 px-3">Locali Autorizzati</th>
+                  <th class="py-2.5 px-3 text-center">Stato</th>
+                  <th class="py-2.5 px-3 text-right">Azioni</th>
+                </tr>
+              </thead>
+              <tbody id="users-table-body" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Form Creazione / Modifica Utente con Caselle di Spunta Permessi -->
+        <div id="user-editor-container" class="p-5 bg-slate-50 rounded-2xl border border-slate-200 space-y-4 hidden">
+          <h4 id="user-editor-title" class="font-bold text-sm text-slate-900">Nuovo Account Utente</h4>
+          
+          <form onsubmit="handleSaveUserSubmit(event)" class="space-y-4 text-xs">
+            <input type="hidden" id="edit-user-id">
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Nome utente *</label>
+                <input type="text" id="form-user-username" required class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300">
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Nome completo *</label>
+                <input type="text" id="form-user-fullname" required placeholder="es. Cuoco Lavis" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300">
+              </div>
+              <div id="form-user-password-container">
+                <label class="block font-semibold text-slate-700 mb-1">Password *</label>
+                <input type="password" id="form-user-password" placeholder="••••••••" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300">
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-6 py-2 border-y border-slate-200">
+              <label class="flex items-center space-x-2 cursor-pointer">
+                <input type="checkbox" id="form-user-isadmin" onchange="toggleAdminCheckboxInEditor(this)" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4">
+                <span class="font-bold text-slate-800">Amministratore (accesso completo a tutti i locali e sezioni)</span>
+              </label>
+
+              <label class="flex items-center space-x-2 cursor-pointer">
+                <input type="checkbox" id="form-user-isactive" checked class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4">
+                <span class="font-semibold text-slate-700">Account Attivo</span>
+              </label>
+            </div>
+
+            <!-- Matrice Permessi per ciascun Locale con Caselle di Spunta -->
+            <div id="permissions-matrix-container" class="space-y-4">
+              <h5 class="font-bold text-slate-800 text-sm">Permessi configurabili per account e locale:</h5>
+              <div id="permissions-matrix-venues" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Generato dinamicamente con caselle di spunta per Sede 1 e Sede 2 -->
+              </div>
+            </div>
+
+            <div class="flex justify-end space-x-2 pt-2">
+              <button type="button" onclick="closeUserEditor()" class="px-4 py-2 text-xs font-semibold rounded-lg text-slate-700 hover:bg-slate-200">Annulla</button>
+              <button type="submit" class="px-5 py-2 text-xs font-bold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm">
+                Salva Account e Permessi
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+      <div class="p-3 bg-slate-50 border-t border-slate-200 flex justify-end">
+        <button onclick="closeModal('modal-manage-users')" class="px-4 py-1.5 font-medium rounded-lg bg-slate-200 text-slate-800 hover:bg-slate-300 text-xs">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CAMBIO OLIO RAPIDO FRIGGITRICE -->
+  <div id="modal-record-oil" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <h3 class="font-bold text-base text-slate-900">Registra Cambio Olio Friggitrice</h3>
+        <button onclick="closeModal('modal-record-oil')" class="p-1 rounded-lg text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <form onsubmit="handleRecordOilSubmit(event)" class="p-5 space-y-3 text-xs">
+        <input type="hidden" id="oil-modal-fryer-id">
+        <div>
+          <span class="text-slate-500 block mb-0.5">Friggitrice:</span>
+          <strong id="oil-modal-fryer-name" class="text-base text-slate-900 block">Friggitrice 1</strong>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Operatore *</label>
+          <input type="text" id="oil-modal-operator" required placeholder="Nome addetto al cambio" class="w-full text-base px-3 py-2.5 rounded-lg border border-slate-300">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Data Cambio *</label>
+            <input type="date" id="oil-modal-date" required class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Ora *</label>
+            <input type="time" id="oil-modal-time" required class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Note / Olio utilizzato</label>
+          <input type="text" id="oil-modal-notes" placeholder="es. Olio di girasole alto oleico 20L" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300">
+        </div>
+
+        <div class="pt-3 flex justify-end space-x-2 border-t border-slate-200">
+          <button type="button" onclick="closeModal('modal-record-oil')" class="px-3.5 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100">Annulla</button>
+          <button type="submit" class="px-5 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm">
+            Salva Cambio Olio
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: REGISTRA PULIZIA CAPPA -->
+  <div id="modal-record-hood" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <h3 class="font-bold text-base text-slate-900">Registra Pulizia Settimanale Cappa</h3>
+        <button onclick="closeModal('modal-record-hood')" class="p-1 rounded-lg text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <form onsubmit="handleRecordHoodSubmit(event)" class="p-5 space-y-3 text-xs">
+        <div>
+          <span class="text-slate-500 block mb-0.5">Settimana di riferimento:</span>
+          <strong id="hood-modal-week-label" class="text-sm text-slate-900 block font-mono">Settimana 47</strong>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Operatore che ha effettuato la pulizia *</label>
+          <input type="text" id="hood-modal-operator" required placeholder="Nome operatore" class="w-full text-base px-3 py-2.5 rounded-lg border border-slate-300">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Data pulizia *</label>
+            <input type="date" id="hood-modal-date" required class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Ora *</label>
+            <input type="time" id="hood-modal-time" required class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Note operative</label>
+          <textarea id="hood-modal-notes" rows="2" placeholder="Lavaggio filtri in lavastoviglie, sgrassaggio canaline e rimontaggio..." class="w-full text-sm p-2 rounded-lg border border-slate-300"></textarea>
+        </div>
+
+        <div class="pt-3 flex justify-end space-x-2 border-t border-slate-200">
+          <button type="button" onclick="closeModal('modal-record-hood')" class="px-3.5 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100">Annulla</button>
+          <button type="submit" class="px-5 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm">
+            Salva Pulizia Eseguita
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: AGGIUNGI / MODIFICA PRODOTTO HACCP ETICHETTE -->
+  <div id="modal-haccp-product" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <h3 class="font-bold text-base text-slate-900">Configura Prodotto e Durata HACCP</h3>
+        <button onclick="closeModal('modal-haccp-product')" class="p-1 rounded-lg text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <form onsubmit="handleSaveHaccpProductSubmit(event)" class="p-5 space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Nome Prodotto Alimentare *</label>
+          <input type="text" id="hprod-name" required placeholder="es. Sugo al Basilico Fresco" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Durata Conservazione (Ore Effettive) *</label>
+          <input type="number" id="hprod-hours" required value="48" min="1" max="720" class="w-full text-base font-bold px-3 py-2 rounded-lg border border-slate-300">
+          <span class="text-[11px] text-slate-500 mt-0.5 block">Predefinito 48 ore secondo piano HACCP, oppure 24h, 72h, ecc.</span>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Categoria</label>
+          <input type="text" id="hprod-cat" placeholder="es. Primi piatti / Gastronomia" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300">
+        </div>
+        <div class="pt-3 flex justify-end space-x-2 border-t border-slate-200">
+          <button type="button" onclick="closeModal('modal-haccp-product')" class="px-3.5 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100">Annulla</button>
+          <button type="submit" class="px-5 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700">Salva Prodotto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: AGGIUNGI FRIGORIFERO -->
+  <div id="modal-haccp-fridge" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <h3 class="font-bold text-base text-slate-900">Aggiungi Frigorifero o Cella</h3>
+        <button onclick="closeModal('modal-haccp-fridge')" class="p-1 rounded-lg text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <form onsubmit="handleSaveFridgeSubmit(event)" class="p-5 space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Nome Frigorifero / Cella *</label>
+          <input type="text" id="hfridge-name" required placeholder="es. Frigo Pizzeria / Bancone" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Temp. Minima (°C)</label>
+            <input type="number" step="0.5" id="hfridge-tmin" value="0.0" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Temp. Massima (°C)</label>
+            <input type="number" step="0.5" id="hfridge-tmax" value="4.0" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300">
+          </div>
+        </div>
+        <div class="pt-3 flex justify-end space-x-2 border-t border-slate-200">
+          <button type="button" onclick="closeModal('modal-haccp-fridge')" class="px-3.5 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100">Annulla</button>
+          <button type="submit" class="px-5 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700">Aggiungi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: RINOMINA FRIGGITRICI -->
+  <div id="modal-config-fryers" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <h3 class="font-bold text-base text-slate-900">Configura Friggitrici</h3>
+        <button onclick="closeModal('modal-config-fryers')" class="p-1 rounded-lg text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="fryers-rename-list" class="p-5 space-y-3 text-xs"></div>
+      <div class="p-3 bg-slate-50 border-t border-slate-200 flex justify-end">
+        <button onclick="closeModal('modal-config-fryers')" class="px-4 py-1.5 font-medium rounded-lg bg-slate-200 text-slate-800 text-xs">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: TRACCIABILITÀ PREZZI FATTURE RIGHE (DRILLDOWN) -->
+  <div id="modal-drilldown" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div>
+          <div class="flex items-center space-x-2">
+            <h3 id="drilldown-title" class="font-bold text-base text-slate-900">Tracciabilità Dettaglio Prezzo</h3>
+            <span id="drilldown-category" class="px-2 py-0.5 rounded text-xs font-semibold bg-indigo-100 text-indigo-800">Categoria</span>
+          </div>
+          <p id="drilldown-subtitle" class="text-xs text-slate-500 mt-0.5">Fornitore • Unità base: LT</p>
+        </div>
+        <button onclick="closeModal('modal-drilldown')" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="drilldown-conversion-banner" class="bg-indigo-50/70 border-b border-indigo-100 px-4 py-2.5 text-xs text-indigo-900 flex items-center justify-between">
+        <span id="drilldown-banner-text">Fattore di conversione</span>
+        <button onclick="openMappingFromDrilldown()" class="text-xs font-bold underline hover:text-indigo-700">Modifica Conversione</button>
+      </div>
+      <div class="flex-1 overflow-y-auto p-4">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-slate-100 text-slate-600 font-semibold uppercase tracking-wider">
+              <th class="py-2.5 px-3">Data &amp; Fattura</th>
+              <th class="py-2.5 px-3">Sede Assegnata</th>
+              <th class="py-2.5 px-3">DDT Rif.</th>
+              <th class="py-2.5 px-3">Descrizione Originale in Fattura</th>
+              <th class="py-2.5 px-3 text-right">Qtà Orig.</th>
+              <th class="py-2.5 px-3 text-right">P. Lordo</th>
+              <th class="py-2.5 px-3 text-right">Sconto</th>
+              <th class="py-2.5 px-3 text-right">P. Netto Orig.</th>
+              <th class="py-2.5 px-3 text-right font-bold text-indigo-900 bg-indigo-50">Qtà Base</th>
+              <th class="py-2.5 px-3 text-right font-bold text-indigo-900 bg-indigo-50">P. Netto / Base</th>
+            </tr>
+          </thead>
+          <tbody id="drilldown-table-body" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+      <div class="p-3 bg-slate-50 border-t border-slate-200 flex justify-between items-center text-xs text-slate-500">
+        <span>Tracciabilità garantita fino al singolo file XML SDI.</span>
+        <button onclick="closeModal('modal-drilldown')" class="px-4 py-1.5 font-medium rounded-lg bg-slate-200 text-slate-800 text-xs">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DETTAGLIO FATTURA COMPLETA -->
+  <div id="modal-invoice-detail" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-lg bg-slate-800 text-white flex items-center justify-center">
+            <i data-lucide="file-text" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h3 id="inv-modal-title" class="font-bold text-base text-slate-900">Fattura N. 1234</h3>
+              <span id="inv-modal-type-badge" class="px-2 py-0.5 rounded text-xs font-semibold bg-slate-100">TD01</span>
+              <span id="inv-modal-venue-badge" class="px-2 py-0.5 rounded text-xs font-semibold badge-krugel">Krügel</span>
+            </div>
+            <p id="inv-modal-supplier" class="text-xs text-slate-500">Cedente</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-invoice-detail')" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div class="p-4 bg-slate-50 border-b border-slate-200 grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+        <div><span class="text-slate-500 block">Data Documento</span><strong id="inv-modal-date" class="text-slate-800 text-sm">--</strong></div>
+        <div><span class="text-slate-500 block">Totale Documento</span><strong id="inv-modal-total" class="text-slate-800 text-sm">€ 0,00</strong></div>
+        <div><span class="text-slate-500 block">Imponibile Netto</span><strong id="inv-modal-net" class="text-slate-800 text-sm">€ 0,00</strong></div>
+        <div><span class="text-slate-500 block">Indirizzo Resa Rilevato</span><span id="inv-modal-delivery" class="font-medium text-slate-700 truncate block">--</span></div>
+      </div>
+      <div class="flex-1 overflow-y-auto p-4">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-slate-100 text-slate-600 font-semibold uppercase tracking-wider">
+              <th class="py-2.5 px-3 w-10">#</th>
+              <th class="py-2.5 px-3">Descrizione Originale &amp; Codice</th>
+              <th class="py-2.5 px-3">DDT</th>
+              <th class="py-2.5 px-3">Sede Assegnata</th>
+              <th class="py-2.5 px-3">Prodotto Canonico</th>
+              <th class="py-2.5 px-3 text-right">Qtà</th>
+              <th class="py-2.5 px-3 text-right">P. Lordo</th>
+              <th class="py-2.5 px-3 text-right">Sconto</th>
+              <th class="py-2.5 px-3 text-right">P. Netto Unit.</th>
+              <th class="py-2.5 px-3 text-right font-bold">Totale Netto</th>
+            </tr>
+          </thead>
+          <tbody id="inv-modal-lines-body" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+      <div class="p-3 bg-slate-50 border-t border-slate-200 flex justify-end">
+        <button onclick="closeModal('modal-invoice-detail')" class="px-4 py-1.5 font-medium rounded-lg bg-slate-200 text-slate-800 text-xs">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: UPLOAD XML / ZIP -->
+  <div id="modal-upload" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="archive" class="w-5 h-5 text-indigo-600"></i>
+          <div>
+            <h3 class="font-bold text-base text-slate-900">Importa Fatture XML, P7M o ZIP</h3>
+            <p class="text-xs text-slate-500">Supporta file singoli e archivi ZIP con fatture multiple</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-upload')" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div id="drop-zone" class="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-indigo-500 hover:bg-indigo-50/30 transition-all cursor-pointer">
+          <i data-lucide="file-archive" class="w-10 h-10 text-indigo-500 mx-auto mb-2"></i>
+          <p class="text-sm font-semibold text-slate-700">Trascina qui i tuoi archivi ZIP o file XML / P7M</p>
+          <p class="text-xs text-slate-500 mt-1">oppure clicca per selezionare dal tuo computer</p>
+          <input type="file" id="file-input" multiple accept=".xml,.p7m,.zip,application/zip" class="hidden" onchange="handleFileSelect(event)">
+        </div>
+        <div id="upload-file-list" class="space-y-1.5 text-xs text-slate-600 max-h-36 overflow-y-auto"></div>
+      </div>
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end space-x-2">
+        <button onclick="closeModal('modal-upload')" class="px-4 py-2 text-xs font-semibold rounded-lg text-slate-700 hover:bg-slate-200">Annulla</button>
+        <button onclick="executeUpload()" id="btn-submit-upload" disabled class="px-4 py-2 text-xs font-semibold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50">
+          Avvia Importazione
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: MAPPATURA PRODOTTI & CONVERSIONE -->
+  <div id="modal-map-product" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <h3 class="font-bold text-base text-slate-900">Mappatura Prodotto &amp; Conversione</h3>
+        <button onclick="closeModal('modal-map-product')" class="p-1 rounded-lg text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <form id="form-map-product" onsubmit="submitMapProduct(event)" class="p-6 space-y-4 text-xs">
+        <input type="hidden" id="map-line-id">
+        <div>
+          <span class="text-slate-500 block mb-0.5">Descrizione originale in fattura:</span>
+          <div id="map-original-desc" class="font-semibold text-slate-800 bg-slate-100 p-2 rounded-lg">--</div>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Seleziona Prodotto Canonico</label>
+          <select id="map-select-product" class="w-full text-sm border border-slate-200 rounded-lg p-2"></select>
+        </div>
+        <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-200">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Fattore Conversione</label>
+            <input type="number" step="0.01" id="map-factor" value="1.0" class="w-full text-sm border border-slate-200 rounded-lg p-2">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Confezione</label>
+            <input type="text" id="map-package-desc" placeholder="es. Fusto 30L / Cassa 6bt" class="w-full text-sm border border-slate-200 rounded-lg p-2">
+          </div>
+        </div>
+        <div class="p-4 bg-slate-50 -mx-6 -mb-6 mt-4 border-t border-slate-200 flex justify-end space-x-2">
+          <button type="button" onclick="closeModal('modal-map-product')" class="px-4 py-2 text-xs font-semibold rounded-lg text-slate-700 hover:bg-slate-200">Annulla</button>
+          <button type="submit" class="px-4 py-2 text-xs font-bold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">Salva Mappatura</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: RINOMINA FRIGORIFERO / CELLA (MANTIENE ID ATTREZZATURA) -->
+  <div id="modal-rename-fridge" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="edit-3" class="w-5 h-5 text-emerald-600"></i>
+          <h3 class="font-bold text-base text-slate-900">Modifica Nome Frigorifero / Cella</h3>
+        </div>
+        <button onclick="closeModal('modal-rename-fridge')" class="p-1 rounded-lg text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <form onsubmit="handleRenameFridgeSubmit(event)" class="p-5 space-y-4 text-xs">
+        <input type="hidden" id="rename-fridge-id">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Nuovo Nome Frigorifero / Cella *</label>
+          <input type="text" id="rename-fridge-name" required placeholder="es. Cella Carni &amp; Salumi" class="w-full text-base px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500">
+          <p class="text-[11px] text-slate-500 mt-1.5 leading-relaxed">
+            L'identificativo interno del frigorifero rimane identico: tutti i controlli temperatura storici restano collegati a questa attrezzatura.
+          </p>
+        </div>
+        <div class="pt-3 flex justify-end space-x-2 border-t border-slate-200">
+          <button type="button" onclick="closeModal('modal-rename-fridge')" class="px-4 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100">Annulla</button>
+          <button type="submit" class="px-5 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm">
+            Salva Nuovo Nome
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: REGISTRA PULIZIA GENERALE (MURI, VETRI, MAGAZZINO) -->
+  <div id="modal-record-general-cleaning" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <h3 id="modal-cleaning-title" class="font-bold text-base text-slate-900">Registra Pulizia</h3>
+        <button onclick="closeModal('modal-record-general-cleaning')" class="p-1 rounded-lg text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <form onsubmit="handleRecordGeneralCleaningSubmit(event)" class="p-5 space-y-3.5 text-xs">
+        <input type="hidden" id="cleaning-modal-tipo">
+        <div id="cleaning-modal-info" class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 font-medium"></div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Operatore che ha effettuato la pulizia *</label>
+          <input type="text" id="cleaning-modal-operator" required placeholder="Nome operatore" class="w-full text-base px-3.5 py-2.5 rounded-lg border border-slate-300">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Data esecuzione *</label>
+            <input type="date" id="cleaning-modal-date" required class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Ora *</label>
+            <input type="time" id="cleaning-modal-time" required class="w-full text-sm px-3 py-2 rounded-lg border border-slate-300">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Note operative</label>
+          <textarea id="cleaning-modal-notes" rows="2" placeholder="Detergenti e disinfettanti impiegati, parti trattate..." class="w-full text-sm p-2.5 rounded-lg border border-slate-300"></textarea>
+        </div>
+
+        <div class="pt-3 flex justify-end space-x-2 border-t border-slate-200">
+          <button type="button" onclick="closeModal('modal-record-general-cleaning')" class="px-3.5 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:bg-slate-100">Annulla</button>
+          <button type="submit" class="px-5 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm">
+            Salva Registrazione
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: DETTAGLIO ISPEZIONE INFESTANTI (8 VOCI) -->
+  <div id="modal-pest-detail" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div>
+          <h3 class="font-bold text-base text-slate-900">Dettaglio Ispezione Infestanti</h3>
+          <p id="pest-modal-subtitle" class="text-xs text-slate-500">Data e operatore</p>
+        </div>
+        <button onclick="closeModal('modal-pest-detail')" class="p-1 rounded-lg text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div class="flex-1 overflow-y-auto p-5 space-y-4 text-xs">
+        <div id="pest-modal-status-badge"></div>
+        <div class="border border-slate-200 rounded-xl overflow-hidden">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+              <tr>
+                <th class="py-2.5 px-3">Voce Verificata</th>
+                <th class="py-2.5 px-3 text-center">Esito</th>
+                <th class="py-2.5 px-3">Zona</th>
+                <th class="py-2.5 px-3">Azione / Note</th>
+              </tr>
+            </thead>
+            <tbody id="pest-modal-items-body" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+        <div id="pest-modal-notes-box" class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-700"></div>
+      </div>
+      <div class="p-3 bg-slate-50 border-t border-slate-200 flex justify-end">
+        <button onclick="closeModal('modal-pest-detail')" class="px-4 py-1.5 font-medium rounded-lg bg-slate-200 text-slate-800 text-xs">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: RISTAMPA PEZZI DEL LOTTO -->
+  <div id="modal-reprint-pieces" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-sm flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div>
+          <h3 class="font-bold text-base text-slate-900">Ristampa Etichette del Lotto</h3>
+          <p id="reprint-modal-lot-label" class="text-xs text-slate-500 font-mono font-bold">Lotto LAV-000001</p>
+        </div>
+        <button onclick="closeModal('modal-reprint-pieces')" class="p-1 rounded-lg text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div class="p-5 space-y-4 text-xs">
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+          <div>
+            <strong id="reprint-modal-prod-name" class="text-sm text-slate-900 block font-bold">Prodotto</strong>
+            <span id="reprint-modal-meta" class="text-slate-500 text-[11px]">Prep: ... - Scad: ...</span>
+          </div>
+          <button id="btn-reprint-entire-lot" onclick="executeReprintEntireLotFromModal()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm flex items-center space-x-1">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            <span id="reprint-modal-all-btn-text">Stampa Tutte</span>
+          </button>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-2">Oppure seleziona e ristampa un singolo pezzo:</label>
+          <div id="reprint-modal-pieces-list" class="max-h-56 overflow-y-auto space-y-1.5 border border-slate-200 rounded-xl p-2 bg-slate-50/50">
+            <!-- elenco pezzi con pulsante Ristampa Pezzo X -->
+          </div>
+        </div>
+      </div>
+      <div class="p-3 bg-slate-50 border-t border-slate-200 flex justify-end">
+        <button onclick="closeModal('modal-reprint-pieces')" class="px-4 py-1.5 font-medium rounded-lg bg-slate-200 text-slate-800 text-xs">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ELEMENTO DEDICATO ALLA STAMPA TERMICA DIRETTA ETICHETTE (SINGOLE O MULTI-PEZZO) -->
+  <div id="printable-label-wrapper" class="hidden">
+    <!-- Popolato dinamicamente da printLabelsBatch() prima di window.print() -->
+  </div>
+
+  <!-- Scripts (con parametro versione per forzare il refresh della cache browser) -->
+  <script src="/static/js/app.js?v=20261119_haccp_v2"></script>
+</body>
+</html>

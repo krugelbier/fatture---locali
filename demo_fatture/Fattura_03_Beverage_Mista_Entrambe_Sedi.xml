@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<p:FatturaElettronica versione="FPR12" xmlns:p="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.2">
+  <FatturaElettronicaHeader>
+    <DatiTrasmissione>
+      <IdTrasmittente>
+        <IdPaese>IT</IdPaese>
+        <IdCodice>03216540268</IdCodice>
+      </IdTrasmittente>
+      <ProgressivoInvio>VBD2026-8871</ProgressivoInvio>
+      <FormatoTrasmissione>FPR12</FormatoTrasmissione>
+      <CodiceDestinatario>SUBM70N</CodiceDestinatario>
+    </DatiTrasmissione>
+    <CedentePrestatore>
+      <DatiAnagrafici>
+        <IdFiscaleIVA>
+          <IdPaese>IT</IdPaese>
+          <IdCodice>03216540268</IdCodice>
+        </IdFiscaleIVA>
+        <CodiceFiscale>03216540268</CodiceFiscale>
+        <Anagrafica>
+          <Denominazione>VENETO BEVERAGE DISTRIBUTION S.R.L.</Denominazione>
+        </Anagrafica>
+      </DatiAnagrafici>
+      <Sede>
+        <Indirizzo>Via Postumia 44</Indirizzo>
+        <CAP>31050</CAP>
+        <Comune>Ponzano Veneto</Comune>
+        <Provincia>TV</Provincia>
+        <Nazione>IT</Nazione>
+      </Sede>
+    </CedentePrestatore>
+    <CessionarioCommittente>
+      <DatiAnagrafici>
+        <IdFiscaleIVA>
+          <IdPaese>IT</IdPaese>
+          <IdCodice>02562290227</IdCodice>
+        </IdFiscaleIVA>
+        <CodiceFiscale>02562290227</CodiceFiscale>
+        <Anagrafica>
+          <Denominazione>GESTIONI LOCALI S.R.L.</Denominazione>
+        </Anagrafica>
+      </DatiAnagrafici>
+      <Sede>
+        <Indirizzo>Via Tamarisi 2</Indirizzo>
+        <CAP>38015</CAP>
+        <Comune>Lavis</Comune>
+        <Provincia>TV</Provincia>
+        <Nazione>IT</Nazione>
+      </Sede>
+    </CessionarioCommittente>
+  </FatturaElettronicaHeader>
+  <FatturaElettronicaBody>
+    <DatiGenerali>
+      <DatiGeneraliDocumento>
+        <TipoDocumento>TD24</TipoDocumento>
+        <Divisa>EUR</Divisa>
+        <Data>2026-11-17</Data>
+        <Numero>FT-DIFF-2026/184</Numero>
+        <ImportoTotaleDocumento>1205.85</ImportoTotaleDocumento>
+      </DatiGeneraliDocumento>
+      <!-- DDT 1 per Krügel -->
+      <DatiDDT>
+        <NumeroDDT>DDT-1043</NumeroDDT>
+        <DataDDT>2026-11-17</DataDDT>
+        <RiferimentoNumeroLinea>1</RiferimentoNumeroLinea>
+        <RiferimentoNumeroLinea>2</RiferimentoNumeroLinea>
+        <IndirizzoResa>
+          <Indirizzo>Via Nazionale (Krügel Birreria)</Indirizzo>
+          <CAP>38015</CAP>
+          <Comune>Lavis</Comune>
+          <Provincia>TV</Provincia>
+        </IndirizzoResa>
+      </DatiDDT>
+      <!-- DDT 2 per Cafè L'Incontro -->
+      <DatiDDT>
+        <NumeroDDT>DDT-1044</NumeroDDT>
+        <DataDDT>2026-11-17</DataDDT>
+        <RiferimentoNumeroLinea>3</RiferimentoNumeroLinea>
+        <RiferimentoNumeroLinea>4</RiferimentoNumeroLinea>
+        <IndirizzoResa>
+          <Indirizzo>Via Tamarisi 2 (Cafè L'Incontro)</Indirizzo>
+          <CAP>38015</CAP>
+          <Comune>Lavis</Comune>
+          <Provincia>TV</Provincia>
+        </IndirizzoResa>
+      </DatiDDT>
+    </DatiGenerali>
+    <DatiBeniServizi>
+      <!-- Linee Krügel -->
+      <DettaglioLinee>
+        <NumeroLinea>1</NumeroLinea>
+        <CodiceArticolo>
+          <CodiceTipo>EAN</CodiceTipo>
+          <CodiceValore>8437009405011</CodiceValore>
+        </CodiceArticolo>
+        <Descrizione>GIN MARE 70CL BOTTIGLIA</Descrizione>
+        <Quantita>6.00</Quantita>
+        <UnitaMisura>BT</UnitaMisura>
+        <PrezzoUnitario>34.00</PrezzoUnitario>
+        <ScontoMaggiorazione>
+          <Tipo>SC</Tipo>
+          <Percentuale>5.00</Percentuale>
+        </ScontoMaggiorazione>
+        <PrezzoTotale>193.80</PrezzoTotale>
+        <AliquotaIVA>22.00</AliquotaIVA>
+      </DettaglioLinee>
+      <DettaglioLinee>
+        <NumeroLinea>2</NumeroLinea>
+        <CodiceArticolo>
+          <CodiceTipo>EAN</CodiceTipo>
+          <CodiceValore>7401005001235</CodiceValore>
+        </CodiceArticolo>
+        <Descrizione>RUM ZACAPA 23 70CL</Descrizione>
+        <Quantita>3.00</Quantita>
+        <UnitaMisura>BT</UnitaMisura>
+        <PrezzoUnitario>52.00</PrezzoUnitario>
+        <ScontoMaggiorazione>
+          <Tipo>SC</Tipo>
+          <Percentuale>7.00</Percentuale>
+        </ScontoMaggiorazione>
+        <PrezzoTotale>145.08</PrezzoTotale>
+        <AliquotaIVA>22.00</AliquotaIVA>
+      </DettaglioLinee>
+      <!-- Linee Cafè L'Incontro -->
+      <DettaglioLinee>
+        <NumeroLinea>3</NumeroLinea>
+        <CodiceArticolo>
+          <CodiceTipo>FORN</CodiceTipo>
+          <CodiceValore>VIN-VALD-DOCG</CodiceValore>
+        </CodiceArticolo>
+        <Descrizione>PROSECCO VALDOBBIADENE SUPERIORE DOCG CT 6 BT</Descrizione>
+        <Quantita>10.00</Quantita>
+        <UnitaMisura>CT</UnitaMisura>
+        <PrezzoUnitario>54.00</PrezzoUnitario>
+        <ScontoMaggiorazione>
+          <Tipo>SC</Tipo>
+          <Percentuale>10.00</Percentuale>
+        </ScontoMaggiorazione>
+        <PrezzoTotale>486.00</PrezzoTotale>
+        <AliquotaIVA>22.00</AliquotaIVA>
+      </DettaglioLinee>
+      <DettaglioLinee>
+        <NumeroLinea>4</NumeroLinea>
+        <CodiceArticolo>
+          <CodiceTipo>EAN</CodiceTipo>
+          <CodiceValore>8002270014901</CodiceValore>
+        </CodiceArticolo>
+        <Descrizione>APEROL 1L BOTTIGLIA</Descrizione>
+        <Quantita>12.00</Quantita>
+        <UnitaMisura>BT</UnitaMisura>
+        <PrezzoUnitario>14.50</PrezzoUnitario>
+        <ScontoMaggiorazione>
+          <Tipo>SC</Tipo>
+          <Percentuale>6.00</Percentuale>
+        </ScontoMaggiorazione>
+        <PrezzoTotale>163.56</PrezzoTotale>
+        <AliquotaIVA>22.00</AliquotaIVA>
+      </DettaglioLinee>
+    </DatiBeniServizi>
+  </FatturaElettronicaBody>
+</p:FatturaElettronica>

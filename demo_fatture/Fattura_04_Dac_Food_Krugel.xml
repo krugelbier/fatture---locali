@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<p:FatturaElettronica versione="FPR12" xmlns:p="http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.2">
+  <FatturaElettronicaHeader>
+    <DatiTrasmissione>
+      <IdTrasmittente>
+        <IdPaese>IT</IdPaese>
+        <IdCodice>01287650174</IdCodice>
+      </IdTrasmittente>
+      <ProgressivoInvio>DAC2026-33910</ProgressivoInvio>
+      <FormatoTrasmissione>FPR12</FormatoTrasmissione>
+      <CodiceDestinatario>SUBM70N</CodiceDestinatario>
+    </DatiTrasmissione>
+    <CedentePrestatore>
+      <DatiAnagrafici>
+        <IdFiscaleIVA>
+          <IdPaese>IT</IdPaese>
+          <IdCodice>01287650174</IdCodice>
+        </IdFiscaleIVA>
+        <CodiceFiscale>01287650174</CodiceFiscale>
+        <Anagrafica>
+          <Denominazione>DAC S.P.A. ALIMENTARI</Denominazione>
+        </Anagrafica>
+      </DatiAnagrafici>
+      <Sede>
+        <Indirizzo>Via Marconi 1</Indirizzo>
+        <CAP>25020</CAP>
+        <Comune>Flero</Comune>
+        <Provincia>BS</Provincia>
+        <Nazione>IT</Nazione>
+      </Sede>
+    </CedentePrestatore>
+    <CessionarioCommittente>
+      <DatiAnagrafici>
+        <IdFiscaleIVA>
+          <IdPaese>IT</IdPaese>
+          <IdCodice>02562290227</IdCodice>
+        </IdFiscaleIVA>
+        <CodiceFiscale>02562290227</CodiceFiscale>
+        <Anagrafica>
+          <Denominazione>GESTIONI LOCALI S.R.L.</Denominazione>
+        </Anagrafica>
+      </DatiAnagrafici>
+      <Sede>
+        <Indirizzo>Via Nazionale</Indirizzo>
+        <CAP>38015</CAP>
+        <Comune>Lavis</Comune>
+        <Provincia>TV</Provincia>
+        <Nazione>IT</Nazione>
+      </Sede>
+    </CessionarioCommittente>
+  </FatturaElettronicaHeader>
+  <FatturaElettronicaBody>
+    <DatiGenerali>
+      <DatiGeneraliDocumento>
+        <TipoDocumento>TD01</TipoDocumento>
+        <Divisa>EUR</Divisa>
+        <Data>2026-09-13</Data>
+        <Numero>FT-DAC-2026/891</Numero>
+        <ImportoTotaleDocumento>556.81</ImportoTotaleDocumento>
+      </DatiGeneraliDocumento>
+      <DatiTrasporto>
+        <DatiIndirizzoResa>
+          <Indirizzo>Via Nazionale (Krügel)</Indirizzo>
+          <CAP>38015</CAP>
+          <Comune>Lavis</Comune>
+          <Provincia>TV</Provincia>
+        </DatiIndirizzoResa>
+      </DatiTrasporto>
+    </DatiGenerali>
+    <DatiBeniServizi>
+      <DettaglioLinee>
+        <NumeroLinea>1</NumeroLinea>
+        <CodiceArticolo>
+          <CodiceTipo>FORN</CodiceTipo>
+          <CodiceValore>CAR-ANGUS-200</CodiceValore>
+        </CodiceArticolo>
+        <Descrizione>HAMBURGER ANGUS 200G CT 25 PZ SURGELATI</Descrizione>
+        <Quantita>4.00</Quantita>
+        <UnitaMisura>CT</UnitaMisura>
+        <PrezzoUnitario>62.50</PrezzoUnitario>
+        <PrezzoTotale>250.00</PrezzoTotale>
+        <AliquotaIVA>10.00</AliquotaIVA>
+      </DettaglioLinee>
+      <DettaglioLinee>
+        <NumeroLinea>2</NumeroLinea>
+        <CodiceArticolo>
+          <CodiceTipo>FORN</CodiceTipo>
+          <CodiceValore>SURG-PAT-DIP</CodiceValore>
+        </CodiceArticolo>
+        <Descrizione>PATATE DIPPER CT 10KG (4X2.5KG)</Descrizione>
+        <Quantita>5.00</Quantita>
+        <UnitaMisura>CT</UnitaMisura>
+        <PrezzoUnitario>24.00</PrezzoUnitario>
+        <PrezzoTotale>120.00</PrezzoTotale>
+        <AliquotaIVA>10.00</AliquotaIVA>
+      </DettaglioLinee>
+      <DettaglioLinee>
+        <NumeroLinea>3</NumeroLinea>
+        <CodiceArticolo>
+          <CodiceTipo>FORN</CodiceTipo>
+          <CodiceValore>PAN-BUN-BRIOCHE</CodiceValore>
+        </CodiceArticolo>
+        <Descrizione>PANE HAMBURGER BRIOCHE BUN CT 48PZ</Descrizione>
+        <Quantita>3.00</Quantita>
+        <UnitaMisura>CT</UnitaMisura>
+        <PrezzoUnitario>28.80</PrezzoUnitario>
+        <PrezzoTotale>86.40</PrezzoTotale>
+        <AliquotaIVA>10.00</AliquotaIVA>
+      </DettaglioLinee>
+    </DatiBeniServizi>
+  </FatturaElettronicaBody>
+</p:FatturaElettronica>

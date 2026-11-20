@@ -1,0 +1,57 @@
+# ==============================================================================
+# .gitignore per Fatture Locali & HACCP
+# Krügel – Lavis & Cafè L’Incontro – Pergine
+# ==============================================================================
+
+# 1. File di configurazione con credenziali, password e segreti
+.env
+.env.local
+.env.*
+!.env.example
+*.key
+*.pem
+*.cert
+*.crt
+
+# 2. Database SQLite, copie e file di journaling/concorrenza
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.bak
+*.restore_temp
+fatture_locali.db*
+data/
+
+# 3. Directory e archivi di backup
+backups/
+*.db.gz
+*.tar.gz
+
+# 4. File di fatture caricate (conservate nel database)
+uploads/
+*.xml
+*.p7m
+!demo_fatture/*.xml
+!demo_fatture/*.zip
+
+# 5. File di cache Python e bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# 6. File di ambiente virtuale e log
+.venv/
+env/
+venv/
+*.log
+
+# 7. File e cartelle degli editor / sistemi operativi
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini

@@ -1,0 +1,62 @@
+version: '3.8'
+
+# ==============================================================================
+# Docker Compose per Fatture Locali & HACCP
+# Krügel – Lavis & Cafè L’Incontro – Pergine
+# ==============================================================================
+
+services:
+  # Servizio Principale Applicativo FastAPI
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fatture_locali_app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - DB_PATH=/data/fatture_locali.db
+      - BACKUP_DIR=/backups
+      - BACKUP_RETENTION_DAYS=30
+    env_file:
+      - .env
+    volumes:
+      # Volume persistente per il database SQLite (MAI perso ai riavvii o aggiornamenti)
+      - gestionale_data:/data
+      # Volume persistente per l'archivio dei backup automatici
+      - gestionale_backups:/backups
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # Servizio Opzionale: Reverse Proxy Caddy con HTTPS Automatico (Let's Encrypt)
+  # Utile se pubblichi direttamente su un server VPS (es. Hetzner, Aruba, DigitalOcean).
+  # Per abilitarlo, basta decommentare il blocco sottostante e sostituire 'tuodominio.it'.
+  #
+  # caddy:
+  #   image: caddy:2-alpine
+  #   container_name: fatture_locali_caddy
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./Caddyfile:/etc/caddy/Caddyfile:ro
+  #     - caddy_data:/data
+  #     - caddy_config:/config
+  #   depends_on:
+  #     - app
+
+volumes:
+  gestionale_data:
+    name: fatture_locali_data
+  gestionale_backups:
+    name: fatture_locali_backups
+  # caddy_data:
+  # caddy_config:
