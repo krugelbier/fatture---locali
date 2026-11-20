@@ -55,3 +55,9 @@ venv/
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# 8. File temporanei di setup e deployment
+deploy_data/
+auth_and_push.py
+auth_status.json
+gcm_*.txt
