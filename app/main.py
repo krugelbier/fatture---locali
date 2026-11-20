@@ -9,7 +9,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from app.database import init_db
-from backup import create_backup
+from backup import (
+    create_backup,
+    acquire_backup_lock,
+    record_backup_completed,
+    record_backup_failed
+)
 from app.routes.auth import router as auth_router
 from app.routes.users import router as users_router
 from app.routes.haccp import router as haccp_router
@@ -21,7 +26,9 @@ from app.routes.settings import router as settings_router
 from app.routes.demo import router as demo_router
 
 async def schedule_daily_backup():
-    """Task asincrono in background per backup automatico notturno (ore 03:00)"""
+    """Task asincrono in background per backup automatico notturno (ore 03:00).
+    Coordinato per ambienti multi-worker (--workers 2): solo un worker esegue il backup.
+    """
     while True:
         try:
             now = datetime.now()
@@ -30,7 +37,23 @@ async def schedule_daily_backup():
                 target += timedelta(days=1)
             wait_seconds = (target - now).total_seconds()
             await asyncio.sleep(wait_seconds)
-            create_backup()
+
+            today_str = datetime.now().strftime("%Y-%m-%d")
+            pid = os.getpid()
+
+            # Tentativo di acquisire il lock atomico per la data odierna
+            if acquire_backup_lock(backup_date=today_str):
+                print(f"[Backup Automatico] Lock acquisito dal worker (PID: {pid}) per data {today_str}. Avvio backup...")
+                try:
+                    gz_file = create_backup()
+                    record_backup_completed(backup_date=today_str, filename=gz_file)
+                    print(f"[Backup Automatico] Backup notturno completato con successo (PID: {pid}).")
+                except Exception as ex:
+                    record_backup_failed(backup_date=today_str, error=str(ex))
+                    print(f"[Backup Automatico] Errore esecuzione backup (PID: {pid}): {ex}")
+            else:
+                print(f"[Backup Automatico] Backup {today_str} già preso in carico da un altro worker. Worker (PID: {pid}) in attesa.")
+
         except asyncio.CancelledError:
             break
         except Exception as e:

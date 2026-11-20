@@ -24,9 +24,96 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_DB = os.path.join(BASE_DIR, "fatture_locali.db")
 DEFAULT_BACKUP_DIR = os.path.join(BASE_DIR, "backups")
 
-DB_PATH = os.environ.get("DB_PATH", DEFAULT_DB)
-BACKUP_DIR = os.environ.get("BACKUP_DIR", DEFAULT_BACKUP_DIR)
-RETENTION_DAYS = int(os.environ.get("BACKUP_RETENTION_DAYS", "30"))
+def get_db_path() -> str:
+    return os.environ.get("DB_PATH", DEFAULT_DB)
+
+def get_backup_dir() -> str:
+    db_p = get_db_path()
+    fallback = os.path.join(os.path.dirname(os.path.abspath(db_p)), "backups")
+    return os.environ.get("BACKUP_DIR", fallback)
+
+def get_retention_days() -> int:
+    return int(os.environ.get("BACKUP_RETENTION_DAYS", "30"))
+
+DB_PATH = get_db_path()
+BACKUP_DIR = get_backup_dir()
+RETENTION_DAYS = get_retention_days()
+
+
+def acquire_backup_lock(db_path: str = None, backup_date: str = None) -> bool:
+    """
+    Coordina i processi worker Uvicorn (es. con --workers 2).
+    Garantisce che un solo worker per notte acquisisca il lock ed esegua il backup programmato.
+    Usa la tabella 'system_backup_log' con vincolo PRIMARY KEY(backup_date) gestito atomicamente da SQLite.
+    """
+    if db_path is None:
+        db_path = get_db_path()
+    if backup_date is None:
+        backup_date = datetime.now().strftime("%Y-%m-%d")
+
+    if not os.path.exists(db_path):
+        return True
+
+    try:
+        conn = sqlite3.connect(db_path, timeout=10.0)
+        with conn:
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS system_backup_log (
+                    backup_date TEXT PRIMARY KEY,
+                    worker_pid INTEGER,
+                    status TEXT,
+                    started_at TEXT,
+                    completed_at TEXT,
+                    filename TEXT
+                )
+            """)
+            cur = conn.cursor()
+            cur.execute("""
+                INSERT OR IGNORE INTO system_backup_log (backup_date, worker_pid, status, started_at)
+                VALUES (?, ?, 'IN_PROGRESS', ?)
+            """, (backup_date, os.getpid(), datetime.now().isoformat()))
+            acquired = cur.rowcount > 0
+        conn.close()
+        return acquired
+    except Exception as e:
+        print(f"[Backup Coordination] Errore verifica lock: {e}")
+        return False
+
+
+def record_backup_completed(db_path: str = None, backup_date: str = None, filename: str = ""):
+    if db_path is None:
+        db_path = get_db_path()
+    if backup_date is None:
+        backup_date = datetime.now().strftime("%Y-%m-%d")
+    try:
+        conn = sqlite3.connect(db_path, timeout=10.0)
+        with conn:
+            conn.execute("""
+                UPDATE system_backup_log
+                SET status = 'COMPLETED', completed_at = ?, filename = ?
+                WHERE backup_date = ?
+            """, (datetime.now().isoformat(), os.path.basename(filename), backup_date))
+        conn.close()
+    except Exception as e:
+        print(f"[Backup Coordination] Avviso aggiornamento completamento: {e}")
+
+
+def record_backup_failed(db_path: str = None, backup_date: str = None, error: str = ""):
+    if db_path is None:
+        db_path = get_db_path()
+    if backup_date is None:
+        backup_date = datetime.now().strftime("%Y-%m-%d")
+    try:
+        conn = sqlite3.connect(db_path, timeout=10.0)
+        with conn:
+            conn.execute("""
+                UPDATE system_backup_log
+                SET status = 'FAILED', completed_at = ?
+                WHERE backup_date = ?
+            """, (datetime.now().isoformat(), backup_date))
+        conn.close()
+    except Exception:
+        pass
 
 
 def verify_integrity(db_file: str) -> bool:
@@ -43,8 +130,14 @@ def verify_integrity(db_file: str) -> bool:
         return False
 
 
-def create_backup(db_path: str = DB_PATH, backup_dir: str = BACKUP_DIR, retention_days: int = RETENTION_DAYS) -> str:
+def create_backup(db_path: str = None, backup_dir: str = None, retention_days: int = None) -> str:
     """Crea un backup coerente a caldo, verifica l'integrità, lo comprime e rimuove i backup obsoleti"""
+    if db_path is None:
+        db_path = get_db_path()
+    if backup_dir is None:
+        backup_dir = get_backup_dir()
+    if retention_days is None:
+        retention_days = get_retention_days()
     if not os.path.exists(db_path):
         raise FileNotFoundError(f"Database sorgente non trovato nel percorso: {db_path}")
 
@@ -108,8 +201,10 @@ def cleanup_old_backups(backup_dir: str, retention_days: int) -> int:
     return deleted_count
 
 
-def list_backups(backup_dir: str = BACKUP_DIR):
+def list_backups(backup_dir: str = None):
     """Elenca tutti i backup disponibili nella cartella"""
+    if backup_dir is None:
+        backup_dir = get_backup_dir()
     if not os.path.exists(backup_dir):
         print(f"Cartella backup vuota o non esistente: {backup_dir}")
         return
@@ -130,8 +225,10 @@ def list_backups(backup_dir: str = BACKUP_DIR):
     print("-" * 76)
 
 
-def restore_backup(backup_file: str, target_db_path: str = DB_PATH):
+def restore_backup(backup_file: str, target_db_path: str = None):
     """Ripristina in modo sicuro il database da un archivio di backup (.db o .db.gz)"""
+    if target_db_path is None:
+        target_db_path = get_db_path()
     if not os.path.exists(backup_file):
         raise FileNotFoundError(f"File di backup non trovato: {backup_file}")
 

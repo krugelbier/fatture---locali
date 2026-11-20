@@ -11,7 +11,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PORT=8000 \
     HOST=0.0.0.0 \
     DB_PATH=/data/fatture_locali.db \
-    BACKUP_DIR=/backups
+    BACKUP_DIR=/data/backups
 
 # Directory di lavoro dell'applicazione
 WORKDIR /app
@@ -31,10 +31,10 @@ COPY demo_fatture /app/demo_fatture
 COPY backup.py /app/backup.py
 
 # Crea le cartelle per i dati persistenti e i backup
-RUN mkdir -p /data /backups
+RUN mkdir -p /data/backups
 
-# Volumi per rendere persistente il database e i backup automatici
-VOLUME ["/data", "/backups"]
+# Volume per rendere persistente il database e i relativi backup
+VOLUME ["/data"]
 
 # Porta di ascolto
 EXPOSE 8000

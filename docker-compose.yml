@@ -19,15 +19,13 @@ services:
       - PORT=8000
       - HOST=0.0.0.0
       - DB_PATH=/data/fatture_locali.db
-      - BACKUP_DIR=/backups
+      - BACKUP_DIR=/data/backups
       - BACKUP_RETENTION_DAYS=30
     env_file:
       - .env
     volumes:
-      # Volume persistente per il database SQLite (MAI perso ai riavvii o aggiornamenti)
+      # Volume persistente per il database SQLite e per la cartella dei backup (/data/backups)
       - gestionale_data:/data
-      # Volume persistente per l'archivio dei backup automatici
-      - gestionale_backups:/backups
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/"]
       interval: 30s
@@ -56,7 +54,5 @@ services:
 volumes:
   gestionale_data:
     name: fatture_locali_data
-  gestionale_backups:
-    name: fatture_locali_backups
   # caddy_data:
   # caddy_config:
