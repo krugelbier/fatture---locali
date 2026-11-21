@@ -647,6 +647,28 @@
       <!-- ======================================================== -->
       <div id="section-haccp-content" class="space-y-6 hidden">
 
+        <!-- BANNER RESET RAPIDO CONTROLLI HACCP (VISIBILE ESCLUSIVAMENTE PER ADMIN) -->
+        <div id="haccp-admin-reset-container" class="hidden flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white p-4 rounded-2xl shadow-md border border-slate-700">
+          <div class="flex items-center space-x-3.5">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center flex-shrink-0 text-xl border border-amber-500/30">
+              ⚡
+            </div>
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="text-[10px] font-black uppercase tracking-widest text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">Funzione Riservata Admin</span>
+              </div>
+              <h4 class="text-sm font-bold text-white mt-0.5">Reset Rapido Scadenze HACCP</h4>
+              <p class="text-xs text-slate-300">Registra automaticamente tutti i controlli come eseguiti e conformi per questo locale, azzerando tutti gli avvisi di scadenza.</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2 flex-shrink-0">
+            <button onclick="handleAdminResetHaccp()" class="flex items-center justify-center space-x-2 text-xs font-bold bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 px-4 py-2.5 rounded-xl transition-all shadow-md active:scale-95 cursor-pointer whitespace-nowrap">
+              <i data-lucide="check-check" class="w-4 h-4"></i>
+              <span>Segna Tutto come Eseguito</span>
+            </button>
+          </div>
+        </div>
+
         <!-- BANNER DEGLI AVVISI SCADUTI HACCP (Pulsazione Lenta / Rosso Fisso se ridotto movimento) -->
         <div id="haccp-alerts-banner" class="hidden space-y-3">
           <!-- Popolato dinamicamente da updateHaccpAlerts() -->

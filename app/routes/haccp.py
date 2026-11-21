@@ -1351,3 +1351,124 @@ def get_haccp_alerts(
 
     conn.close()
     return {"alerts": alerts, "count": len(alerts), "sede_id": sede_id}
+
+
+# ========================================================
+# 8. RESET RAPIDO CONTROLLI SCADUTI HACCP (SOLO ADMIN)
+# ========================================================
+class AdminResetAlertsRequest(BaseModel):
+    sede_id: int
+    both_sedi: Optional[bool] = False
+
+@router.post("/admin-reset-alerts")
+def admin_reset_alerts(
+    req: AdminResetAlertsRequest,
+    user: dict = Depends(get_current_user)
+):
+    """
+    Funzionalità riservata esclusivamente all'amministratore (is_admin == 1).
+    Inserisce registrazioni valide, conformi e aggiornate alla data/ora corrente
+    per tutte le attività HACCP soggette ad avviso di scadenza per il locale indicato
+    (o per entrambi i locali se richiesto):
+    - Pulizia cappa
+    - Controllo temperatura per tutti i frigoriferi attivi (valore target conforme)
+    - Cambio olio per tutte le friggitrici attive
+    - Pulizie generali (muri, vetri, magazzino) con relative scadenze corrette
+    - Scheda monitoraggio infestanti (tutte le 8 voci conformi/assenti)
+    In questo modo tutti i banner di avviso di scadenza vengono azzerati e tutte
+    le sezioni risultano 'IN REGOLA' ed 'ESEGUITE'.
+    """
+    if not user.get("is_admin"):
+        raise HTTPException(
+            status_code=403,
+            detail="Operazione riservata esclusivamente all'amministratore."
+        )
+
+    conn = get_db()
+    cursor = conn.cursor()
+    now = datetime.now()
+    today_str = now.strftime("%Y-%m-%d")
+    now_time_str = now.strftime("%H:%M")
+    operatore_nome = user.get("nome_completo") or user.get("username") or "Amministratore"
+    operatore_str = f"Admin ({operatore_nome})"
+
+    sedi_ids = [req.sede_id]
+    if req.both_sedi:
+        cursor.execute("SELECT id FROM sedi")
+        sedi_ids = [r["id"] for r in cursor.fetchall()]
+
+    for s_id in sedi_ids:
+        # 1. Pulizia Cappa
+        year, week, mon_str, sun_str = HaccpService.get_current_iso_week(now.date())
+        cursor.execute("""
+            INSERT INTO haccp_pulizia_cappa (
+                sede_id, anno, settimana_numero, data_inizio_settimana,
+                data_fine_settimana, data_pulizia, ora_pulizia, operatore, note
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Reset rapido controlli eseguito da Amministratore')
+        """, (s_id, year, week, mon_str, sun_str, today_str, now_time_str, operatore_str))
+
+        # 2. Controllo Frigoriferi (tutti i frigoriferi attivi per questa sede)
+        cursor.execute("""
+            SELECT id, nome, temperatura_min, temperatura_max
+            FROM haccp_frigoriferi
+            WHERE sede_id = ? AND is_active = 1
+        """, (s_id,))
+        frigos = cursor.fetchall()
+        for fr in frigos:
+            t_min = fr["temperatura_min"] if fr["temperatura_min"] is not None else 0.0
+            t_max = fr["temperatura_max"] if fr["temperatura_max"] is not None else 4.0
+            t_val = round((t_min + t_max) / 2.0, 1)
+            cursor.execute("""
+                INSERT INTO haccp_temperature (sede_id, frigorifero_id, data_controllo, ora_controllo, temperatura, operatore, esito, azione_correttiva)
+                VALUES (?, ?, ?, ?, ?, ?, 'CONFORME', NULL)
+            """, (s_id, fr["id"], today_str, now_time_str, t_val, operatore_str))
+
+        # 3. Cambio Olio Friggitrici (tutte le friggitrici attive per questa sede)
+        cursor.execute("""
+            SELECT id, nome
+            FROM haccp_friggitrici
+            WHERE sede_id = ? AND is_active = 1
+        """, (s_id,))
+        fryers = cursor.fetchall()
+        for fg in fryers:
+            cursor.execute("""
+                INSERT INTO haccp_cambio_olio (sede_id, friggitrice_id, data_cambio, ora_cambio, operatore, note)
+                VALUES (?, ?, ?, ?, ?, 'Reset rapido controlli eseguito da Amministratore')
+            """, (s_id, fg["id"], today_str, now_time_str, operatore_str))
+
+        # 4. Pulizie Generali (muri, vetri, magazzino)
+        for tipo_p in ["muri", "vetri", "magazzino"]:
+            if tipo_p in ("muri", "vetri"):
+                next_scad = HaccpService.add_calendar_month(now).date().isoformat()
+            else:
+                next_scad = (now + timedelta(days=7)).date().isoformat()
+            cursor.execute("""
+                INSERT INTO haccp_pulizie (sede_id, tipo_pulizia, data_esecuzione, ora_esecuzione, operatore, note, prossima_scadenza)
+                VALUES (?, ?, ?, ?, ?, 'Reset rapido controlli eseguito da Amministratore', ?)
+            """, (s_id, tipo_p, today_str, now_time_str, operatore_str, next_scad))
+
+        # 5. Monitoraggio Infestanti
+        voci_standard = [
+            {"id": 1, "nome": "Stato visivo locali e pertinenze", "esito": "CONFORME"},
+            {"id": 2, "nome": "Presenza roditori (escrementi, tracce)", "esito": "ASSENTE"},
+            {"id": 3, "nome": "Presenza insetti striscianti (blatte, formiche)", "esito": "ASSENTE"},
+            {"id": 4, "nome": "Presenza insetti volanti (mosche, moscerini)", "esito": "ASSENTE"},
+            {"id": 5, "nome": "Integrità zanzariere e barriere antintrusione", "esito": "CONFORME"},
+            {"id": 6, "nome": "Controllo trappole a luce UV / piastre collanti", "esito": "CONFORME"},
+            {"id": 7, "nome": "Controllo erogatori esche esterne (se presenti)", "esito": "CONFORME"},
+            {"id": 8, "nome": "Chiusura ermetica contenitori rifiuti e farine", "esito": "CONFORME"}
+        ]
+        prossima_scad_pests = HaccpService.add_calendar_month(now).date().isoformat()
+        cursor.execute("""
+            INSERT INTO haccp_infestanti (sede_id, data_controllo, ora_controllo, operatore, has_presenze, risposte_json, note_generali, prossima_scadenza)
+            VALUES (?, ?, ?, ?, 0, ?, 'Reset rapido controlli eseguito da Amministratore - Regolare', ?)
+        """, (s_id, today_str, now_time_str, operatore_str, json.dumps(voci_standard), prossima_scad_pests))
+
+    conn.commit()
+    conn.close()
+
+    return {
+        "success": True,
+        "message": "Tutti i controlli e le pulizie sono stati registrati come eseguiti e conformi.",
+        "sedi_aggiornate": sedi_ids
+    }

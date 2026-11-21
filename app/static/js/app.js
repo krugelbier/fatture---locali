@@ -2510,6 +2510,16 @@ async function openPestInspectionDetail(inspectionId) {
 async function loadHaccpAlerts() {
   if (!activeVenueId || activeSection !== 'haccp') return;
 
+  // Mostra il pulsante di Reset Rapido solo se l'utente corrente è amministratore
+  const adminResetContainer = document.getElementById('haccp-admin-reset-container');
+  if (adminResetContainer) {
+    if (currentUser && currentUser.is_admin) {
+      adminResetContainer.classList.remove('hidden');
+    } else {
+      adminResetContainer.classList.add('hidden');
+    }
+  }
+
   try {
     const res = await authFetch(`/api/haccp/alerts?sede_id=${activeVenueId}`);
     if (!res.ok) return;
@@ -2633,6 +2643,55 @@ function renderTabSpecificAlerts() {
   });
 
   lucide.createIcons();
+}
+
+/**
+ * Reset rapido di tutti i controlli HACCP scaduti (Riservato Admin)
+ * Inserisce registrazioni conformi per cappa, frighi, friggitrici, pulizie e infestanti,
+ * azzerando all'istante tutti gli avvisi di scadenza e portando tutte le sezioni su 'IN REGOLA'.
+ */
+async function handleAdminResetHaccp() {
+  if (!currentUser || !currentUser.is_admin) {
+    showToast("Azione riservata all'amministratore.", "error");
+    return;
+  }
+
+  const venueName = (currentVenues && currentVenues.find(v => v.id === activeVenueId))?.nome || 'questo locale';
+  const confirmed = confirm(
+    `Vuoi confermare il RESET RAPIDO di tutti i controlli HACCP per ${venueName}?\n\n` +
+    `Questa operazione registrerà automaticamente tutti i controlli (temperature frigoriferi, cambio olio, pulizia cappa, pulizie muri/vetri/magazzino e monitoraggio infestanti) ` +
+    `come ESEGUITI e CONFORMI alla data e ora corrente, azzerando tutti i banner di avviso di scadenza.`
+  );
+  if (!confirmed) return;
+
+  try {
+    const res = await authFetch('/api/haccp/admin-reset-alerts', {
+      method: 'POST',
+      body: JSON.stringify({ sede_id: activeVenueId })
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || 'Errore durante il reset dei controlli.');
+    }
+    const data = await res.json();
+    showToast(data.message || 'Tutti i controlli sono stati registrati come eseguiti e conformi!', 'success');
+
+    // Ricarica subito gli avvisi (che diventeranno 0, nascondendo i banner rossi)
+    await loadHaccpAlerts();
+
+    // Ricarica i dati della scheda HACCP attualmente aperta
+    if (currentHaccpTab === 'temp') await loadHaccpTemperatureData();
+    else if (currentHaccpTab === 'oil') await loadHaccpOilData();
+    else if (currentHaccpTab === 'hood') await loadHaccpHoodData();
+    else if (currentHaccpTab && currentHaccpTab.startsWith('cleaning_')) await loadHaccpCleaningsData();
+    else if (currentHaccpTab === 'pests') await loadHaccpPestsData();
+
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+      lucide.createIcons();
+    }
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
 }
 
 // ==========================================
