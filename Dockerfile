@@ -33,9 +33,6 @@ COPY backup.py /app/backup.py
 # Crea le cartelle per i dati persistenti e i backup
 RUN mkdir -p /data/backups
 
-# Volume per rendere persistente il database e i relativi backup
-VOLUME ["/data"]
-
 # Porta di ascolto
 EXPOSE 8000
 
