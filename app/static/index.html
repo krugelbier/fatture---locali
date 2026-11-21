@@ -2056,12 +2056,64 @@
     </div>
   </div>
 
+  <!-- MODALE CONFERMA RESET RAPIDO CONTROLLI HACCP (ADMIN) -->
+  <div id="modal-confirm-admin-reset" class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div class="p-4 bg-gradient-to-r from-slate-900 to-indigo-950 text-white flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <span class="text-2xl">⚡</span>
+          <div>
+            <h3 class="font-bold text-sm text-white">Reset Rapido Scadenze HACCP</h3>
+            <p class="text-[11px] text-amber-300 font-medium" id="reset-modal-venue-name">Krügel – Lavis</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-confirm-admin-reset')" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="p-5 space-y-4">
+        <p class="text-xs text-slate-600 leading-relaxed">
+          Vuoi registrare <strong>tutti i controlli e le pulizie</strong> di questa sede come <strong>eseguiti e conformi</strong> alla data e ora attuale?
+        </p>
+        <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 space-y-1.5">
+          <div class="font-bold flex items-center space-x-1.5 text-amber-950">
+            <i data-lucide="check-circle" class="w-4 h-4 text-amber-600 flex-shrink-0"></i>
+            <span>Verranno azzerati tutti i banner di avviso:</span>
+          </div>
+          <ul class="list-disc list-inside text-[11px] text-amber-800 space-y-0.5 pl-1">
+            <li>Temperature di tutti i frigoriferi attivi (valore target)</li>
+            <li>Cambio olio di tutte le friggitrici attive</li>
+            <li>Pulizia settimanale della cappa</li>
+            <li>Pulizie periodiche (muri, vetri, magazzino)</li>
+            <li>Scheda monitoraggio infestanti (regolare)</li>
+          </ul>
+        </div>
+        
+        <div class="flex items-center space-x-2 pt-1">
+          <input type="checkbox" id="chk-reset-both-venues" class="w-4 h-4 rounded text-amber-600 border-slate-300 focus:ring-amber-500 cursor-pointer">
+          <label for="chk-reset-both-venues" class="text-xs font-semibold text-slate-700 cursor-pointer">
+            Applica contemporaneamente a <strong class="text-slate-900">entrambi i locali</strong> (Lavis & Pergine)
+          </label>
+        </div>
+      </div>
+      <div class="p-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-end space-x-2.5">
+        <button onclick="closeModal('modal-confirm-admin-reset')" class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-200 rounded-xl transition-all cursor-pointer">
+          Annulla
+        </button>
+        <button id="btn-modal-confirm-reset-action" onclick="executeAdminResetHaccp()" class="flex items-center space-x-1.5 px-4 py-2 text-xs font-bold bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 rounded-xl transition-all shadow-sm active:scale-95 cursor-pointer">
+          <i data-lucide="check-check" class="w-4 h-4"></i>
+          <span>Sì, Registra Tutto Conforme</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ELEMENTO DEDICATO ALLA STAMPA TERMICA DIRETTA ETICHETTE (SINGOLE O MULTI-PEZZO) -->
   <div id="printable-label-wrapper" class="hidden">
     <!-- Popolato dinamicamente da printLabelsBatch() prima di window.print() -->
   </div>
 
   <!-- Scripts (con parametro versione per forzare il refresh della cache browser) -->
-  <script src="/static/js/app.js?v=20261121_admin_reset_v3"></script>
+  <script src="/static/js/app.js?v=20261121_modal_reset_v4"></script>
 </body>
 </html>

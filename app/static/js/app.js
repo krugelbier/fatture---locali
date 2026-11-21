@@ -2650,7 +2650,10 @@ function renderTabSpecificAlerts() {
  * Inserisce registrazioni conformi per cappa, frighi, friggitrici, pulizie e infestanti,
  * azzerando all'istante tutti gli avvisi di scadenza e portando tutte le sezioni su 'IN REGOLA'.
  */
-async function handleAdminResetHaccp() {
+/**
+ * Apre la modale di conferma Reset Rapido HACCP (Riservato Admin)
+ */
+function handleAdminResetHaccp() {
   if (!currentUser || !currentUser.is_admin) {
     showToast("Azione riservata all'amministratore.", "error");
     return;
@@ -2660,14 +2663,29 @@ async function handleAdminResetHaccp() {
   const venueObj = (currentVenues && currentVenues.find(v => v.id === vId));
   const venueName = venueObj ? venueObj.nome : 'questo locale';
 
-  const confirmed = confirm(
-    `Vuoi confermare il RESET RAPIDO di tutti i controlli HACCP per ${venueName}?\n\n` +
-    `Questa operazione registrerà automaticamente tutti i controlli (temperature frigoriferi, cambio olio, pulizia cappa, pulizie muri/vetri/magazzino e monitoraggio infestanti) ` +
-    `come ESEGUITI e CONFORMI alla data e ora corrente, azzerando tutti i banner di avviso di scadenza.`
-  );
-  if (!confirmed) return;
+  const titleEl = document.getElementById('reset-modal-venue-name');
+  if (titleEl) titleEl.textContent = venueName;
 
-  const btn = document.getElementById('btn-admin-reset-haccp-action');
+  const chkBoth = document.getElementById('chk-reset-both-venues');
+  if (chkBoth) chkBoth.checked = false;
+
+  openModal('modal-confirm-admin-reset');
+}
+
+/**
+ * Esegue il reset effettivo inviando la richiesta all'API
+ */
+async function executeAdminResetHaccp() {
+  if (!currentUser || !currentUser.is_admin) {
+    showToast("Azione riservata all'amministratore.", "error");
+    return;
+  }
+
+  const vId = activeVenueId || (currentVenues && currentVenues[0] ? currentVenues[0].id : 1);
+  const chkBoth = document.getElementById('chk-reset-both-venues');
+  const resetBoth = chkBoth ? chkBoth.checked : false;
+
+  const btn = document.getElementById('btn-modal-confirm-reset-action');
   if (btn) {
     btn.disabled = true;
     btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Registrazione in corso...</span>`;
@@ -2677,13 +2695,14 @@ async function handleAdminResetHaccp() {
   try {
     const res = await authFetch('/api/haccp/admin-reset-alerts', {
       method: 'POST',
-      body: JSON.stringify({ sede_id: vId })
+      body: JSON.stringify({ sede_id: vId, both_sedi: resetBoth })
     });
     if (!res.ok) {
       const err = await res.json();
       throw new Error(err.detail || 'Errore durante il reset dei controlli.');
     }
     const data = await res.json();
+    closeModal('modal-confirm-admin-reset');
     showToast(data.message || 'Tutti i controlli sono stati registrati come eseguiti e conformi!', 'success');
 
     // Ricarica subito gli avvisi (che diventeranno 0, nascondendo i banner rossi)
@@ -2715,7 +2734,7 @@ async function handleAdminResetHaccp() {
   } finally {
     if (btn) {
       btn.disabled = false;
-      btn.innerHTML = `<i data-lucide="check-check" class="w-4 h-4"></i><span>Segna Tutto come Eseguito</span>`;
+      btn.innerHTML = `<i data-lucide="check-check" class="w-4 h-4"></i><span>Sì, Registra Tutto Conforme</span>`;
       if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
     }
   }
