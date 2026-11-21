@@ -141,6 +141,9 @@ async function authFetch(url, options = {}) {
   if (authToken) {
     headers['Authorization'] = `Bearer ${authToken}`;
   }
+  if (options.body && typeof options.body === 'string' && !headers['Content-Type'] && !headers['content-type']) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   const fetchOptions = {
     ...options,
@@ -2698,11 +2701,17 @@ async function executeAdminResetHaccp() {
   try {
     const res = await authFetch('/api/haccp/admin-reset-alerts', {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sede_id: vId, both_sedi: resetBoth })
     });
     if (!res.ok) {
       const err = await res.json();
-      throw new Error(err.detail || 'Errore durante il reset dei controlli.');
+      let errMsg = 'Errore durante il reset dei controlli.';
+      if (err.detail) {
+        if (typeof err.detail === 'string') errMsg = err.detail;
+        else if (Array.isArray(err.detail) && err.detail[0] && err.detail[0].msg) errMsg = err.detail[0].msg;
+      }
+      throw new Error(errMsg);
     }
     const data = await res.json();
     closeModal('modal-confirm-admin-reset');
