@@ -586,6 +586,19 @@ def seed_default_haccp(cursor):
             cursor.execute("INSERT INTO haccp_friggitrici (sede_id, nome) VALUES (?, 'Friggitrice 1')", (sede_id,))
             cursor.execute("INSERT INTO haccp_friggitrici (sede_id, nome) VALUES (?, 'Friggitrice 2')", (sede_id,))
 
+    # Assicura la presenza di Friggitrice 3 per Krügel (sede_id = 1)
+    cursor.execute("SELECT id FROM haccp_friggitrici WHERE sede_id = 1 AND (nome = 'Friggitrice 3' OR nome LIKE 'Friggitrice 3%')")
+    f3_row = cursor.fetchone()
+    if not f3_row:
+        cursor.execute("INSERT INTO haccp_friggitrici (sede_id, nome, is_active) VALUES (1, 'Friggitrice 3', 1)")
+        f3_id = cursor.lastrowid
+        now_d = datetime.now().strftime("%Y-%m-%d")
+        now_t = datetime.now().strftime("%H:%M")
+        cursor.execute("""
+            INSERT INTO haccp_cambio_olio (sede_id, friggitrice_id, data_cambio, ora_cambio, operatore, note)
+            VALUES (1, ?, ?, ?, 'Amministratore di Sistema', 'Attivazione iniziale Friggitrice 3')
+        """, (f3_id, now_d, now_t))
+
     # Inizializza Prodotti di preparazione etichette (con 48 ore preconfigurate)
     for sede_id in [1, 2]:
         cursor.execute("SELECT COUNT(*) as cnt FROM haccp_prodotti_etichette WHERE sede_id = ?", (sede_id,))

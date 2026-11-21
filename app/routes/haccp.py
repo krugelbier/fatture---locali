@@ -539,6 +539,11 @@ def get_temperature_history(
 # ========================================================
 # 3. HACCP - CAMBIO OLIO FRIGGITRICI
 # ========================================================
+class FryerCreate(BaseModel):
+    sede_id: int
+    nome: Optional[str] = None
+    nome_friggitrice: Optional[str] = None
+
 class FryerUpdate(BaseModel):
     nome: Optional[str] = None
     nome_friggitrice: Optional[str] = None
@@ -564,7 +569,7 @@ def list_fryers(sede_id: int = Query(...), user: dict = Depends(get_current_user
     for r in cursor.fetchall():
         fryer = dict(r)
         fryer["nome_friggitrice"] = fryer["nome"]
-        fryer["codice_identificativo"] = f"Friggitrice {fryer['id'] % 2 + 1 if fryer['id'] % 2 != 0 else 2}"
+        fryer["codice_identificativo"] = fryer["nome"]
         fryer["capacita_litri"] = 20
 
         # Ultimo cambio olio
@@ -599,6 +604,26 @@ def list_fryers(sede_id: int = Query(...), user: dict = Depends(get_current_user
     conn.close()
     return {"fryers": fryers, "count": len(fryers)}
 
+@router.post("/oil/fryers")
+def add_fryer(req: FryerCreate, user: dict = Depends(get_current_user)):
+    verify_sede_permission(user, req.sede_id, "haccp.oil.manage")
+    f_name = (req.nome_friggitrice or req.nome or "Friggitrice").strip()
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO haccp_friggitrici (sede_id, nome, is_active)
+        VALUES (?, ?, 1)
+    """, (req.sede_id, f_name))
+    f_id = cursor.lastrowid
+    now = datetime.now()
+    cursor.execute("""
+        INSERT INTO haccp_cambio_olio (sede_id, friggitrice_id, data_cambio, ora_cambio, operatore, note)
+        VALUES (?, ?, ?, ?, ?, 'Attivazione iniziale')
+    """, (req.sede_id, f_id, now.strftime("%Y-%m-%d"), now.strftime("%H:%M"), user.get("nome_completo") or user.get("username") or "Admin"))
+    conn.commit()
+    conn.close()
+    return {"success": True, "id": f_id, "message": f"'{f_name}' aggiunta con successo."}
+
 @router.put("/oil/fryers/{fryer_id}")
 def rename_fryer(fryer_id: int, req: FryerUpdate, user: dict = Depends(get_current_user)):
     conn = get_db()
@@ -615,6 +640,21 @@ def rename_fryer(fryer_id: int, req: FryerUpdate, user: dict = Depends(get_curre
     conn.commit()
     conn.close()
     return {"success": True, "message": "Nome friggitrice aggiornato."}
+
+@router.delete("/oil/fryers/{fryer_id}")
+def delete_fryer(fryer_id: int, user: dict = Depends(get_current_user)):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT sede_id FROM haccp_friggitrici WHERE id = ?", (fryer_id,))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Friggitrice non trovata.")
+    verify_sede_permission(user, row["sede_id"], "haccp.oil.manage")
+    cursor.execute("UPDATE haccp_friggitrici SET is_active = 0 WHERE id = ?", (fryer_id,))
+    conn.commit()
+    conn.close()
+    return {"success": True, "message": "Friggitrice rimossa con successo."}
 
 @router.post("/oil/record")
 def record_oil_change(req: OilChangeCreate, user: dict = Depends(get_current_user)):

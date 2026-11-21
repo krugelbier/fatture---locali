@@ -1636,24 +1636,81 @@ async function loadHaccpOilHistory() {
 
 function openConfigureFryersModal() {
   const container = document.getElementById('fryers-rename-list');
+  if (!container) return;
   container.innerHTML = '';
 
-  cachedFryers.forEach(f => {
-    const row = document.createElement('div');
-    row.className = 'p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between space-x-2';
-    row.innerHTML = `
-      <div class="flex-1">
-        <label class="block text-[11px] font-bold text-slate-500 uppercase">${f.codice_identificativo}</label>
-        <input type="text" id="rename-fryer-${f.id}" value="${f.nome_friggitrice}" class="w-full text-sm font-semibold px-2.5 py-1.5 rounded-lg border border-slate-300">
-      </div>
-      <button onclick="saveFryerRename(${f.id})" class="px-3 py-2 text-xs font-bold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 mt-4">
-        Salva
-      </button>
-    `;
-    container.appendChild(row);
-  });
+  const inputNew = document.getElementById('new-fryer-name');
+  if (inputNew) inputNew.value = '';
 
+  if (cachedFryers.length === 0) {
+    container.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">Nessuna friggitrice attiva. Aggiungine una sopra.</p>`;
+  } else {
+    cachedFryers.forEach(f => {
+      const row = document.createElement('div');
+      row.className = 'p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between space-x-2';
+      row.innerHTML = `
+        <div class="flex-1">
+          <label class="block text-[11px] font-bold text-slate-500 uppercase">${f.nome_friggitrice || f.nome}</label>
+          <input type="text" id="rename-fryer-${f.id}" value="${f.nome_friggitrice || f.nome}" class="w-full text-sm font-semibold px-2.5 py-1.5 rounded-lg border border-slate-300">
+        </div>
+        <button onclick="saveFryerRename(${f.id})" class="px-3 py-2 text-xs font-bold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 mt-4 cursor-pointer">
+          Salva
+        </button>
+        <button onclick="deleteFryer(${f.id})" class="p-2 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 mt-4 cursor-pointer" title="Rimuovi">
+          <i data-lucide="trash-2" class="w-4 h-4"></i>
+        </button>
+      `;
+      container.appendChild(row);
+    });
+  }
+
+  if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
   openModal('modal-config-fryers');
+}
+
+async function handleAddNewFryer() {
+  const input = document.getElementById('new-fryer-name');
+  const name = input ? input.value.trim() : '';
+  if (!name) {
+    showToast('Inserisci un nome per la friggitrice.', 'error');
+    return;
+  }
+  const vId = activeVenueId || 1;
+  try {
+    const res = await authFetch('/api/haccp/oil/fryers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sede_id: vId, nome: name })
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || 'Errore durante la creazione.');
+    }
+    const d = await res.json();
+    showToast(d.message || 'Friggitrice aggiunta!', 'success');
+    if (input) input.value = '';
+    await loadHaccpOil();
+    openConfigureFryersModal();
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+async function deleteFryer(fryerId) {
+  if (!confirm('Vuoi rimuovere questa friggitrice dall\'elenco attivo?')) return;
+  try {
+    const res = await authFetch(`/api/haccp/oil/fryers/${fryerId}`, { method: 'DELETE' });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || 'Errore durante la rimozione.');
+    }
+    const d = await res.json();
+    showToast(d.message || 'Friggitrice rimossa.', 'success');
+    await loadHaccpOil();
+    openConfigureFryersModal();
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
 }
 
 async function saveFryerRename(fryerId) {
