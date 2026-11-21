@@ -2656,7 +2656,10 @@ async function handleAdminResetHaccp() {
     return;
   }
 
-  const venueName = (currentVenues && currentVenues.find(v => v.id === activeVenueId))?.nome || 'questo locale';
+  const vId = activeVenueId || (currentVenues && currentVenues[0] ? currentVenues[0].id : 1);
+  const venueObj = (currentVenues && currentVenues.find(v => v.id === vId));
+  const venueName = venueObj ? venueObj.nome : 'questo locale';
+
   const confirmed = confirm(
     `Vuoi confermare il RESET RAPIDO di tutti i controlli HACCP per ${venueName}?\n\n` +
     `Questa operazione registrerà automaticamente tutti i controlli (temperature frigoriferi, cambio olio, pulizia cappa, pulizie muri/vetri/magazzino e monitoraggio infestanti) ` +
@@ -2664,10 +2667,17 @@ async function handleAdminResetHaccp() {
   );
   if (!confirmed) return;
 
+  const btn = document.getElementById('btn-admin-reset-haccp-action');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Registrazione in corso...</span>`;
+    if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+  }
+
   try {
     const res = await authFetch('/api/haccp/admin-reset-alerts', {
       method: 'POST',
-      body: JSON.stringify({ sede_id: activeVenueId })
+      body: JSON.stringify({ sede_id: vId })
     });
     if (!res.ok) {
       const err = await res.json();
@@ -2680,17 +2690,34 @@ async function handleAdminResetHaccp() {
     await loadHaccpAlerts();
 
     // Ricarica i dati della scheda HACCP attualmente aperta
-    if (currentHaccpTab === 'temp') await loadHaccpTemperatureData();
-    else if (currentHaccpTab === 'oil') await loadHaccpOilData();
-    else if (currentHaccpTab === 'hood') await loadHaccpHoodData();
-    else if (currentHaccpTab && currentHaccpTab.startsWith('cleaning_')) await loadHaccpCleaningsData();
-    else if (currentHaccpTab === 'pests') await loadHaccpPestsData();
+    if (currentHaccpTab === 'temp' && typeof loadHaccpTemperature === 'function') {
+      await loadHaccpTemperature();
+    } else if (currentHaccpTab === 'oil' && typeof loadHaccpOil === 'function') {
+      await loadHaccpOil();
+    } else if (currentHaccpTab === 'hood' && typeof loadHaccpHood === 'function') {
+      await loadHaccpHood();
+    } else if (currentHaccpTab === 'cleaning_walls' && typeof loadHaccpCleaning === 'function') {
+      await loadHaccpCleaning('muri');
+    } else if (currentHaccpTab === 'cleaning_windows' && typeof loadHaccpCleaning === 'function') {
+      await loadHaccpCleaning('vetri');
+    } else if (currentHaccpTab === 'cleaning_warehouse' && typeof loadHaccpCleaning === 'function') {
+      await loadHaccpCleaning('magazzino');
+    } else if (currentHaccpTab === 'pests' && typeof loadHaccpPests === 'function') {
+      await loadHaccpPests();
+    }
 
     if (typeof lucide !== 'undefined' && lucide.createIcons) {
       lucide.createIcons();
     }
   } catch (err) {
+    console.error('Errore reset admin HACCP:', err);
     showToast(err.message, 'error');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<i data-lucide="check-check" class="w-4 h-4"></i><span>Segna Tutto come Eseguito</span>`;
+      if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    }
   }
 }
 
