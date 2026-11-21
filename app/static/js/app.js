@@ -120,13 +120,17 @@ function openModal(id) {
   const el = document.getElementById(id);
   if (el) {
     el.classList.remove('hidden');
-    lucide.createIcons();
+    el.style.display = 'flex';
+    if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
   }
 }
 
 function closeModal(id) {
   const el = document.getElementById(id);
-  if (el) el.classList.add('hidden');
+  if (el) {
+    el.classList.add('hidden');
+    el.style.display = 'none';
+  }
 }
 
 // ==========================================
@@ -2659,9 +2663,8 @@ function handleAdminResetHaccp() {
     return;
   }
 
-  const vId = activeVenueId || (currentVenues && currentVenues[0] ? currentVenues[0].id : 1);
-  const venueObj = (currentVenues && currentVenues.find(v => v.id === vId));
-  const venueName = venueObj ? venueObj.nome : 'questo locale';
+  const vId = activeVenueId || 1;
+  const venueName = vId === 1 ? 'Krügel – Lavis' : 'Cafè L’Incontro – Pergine';
 
   const titleEl = document.getElementById('reset-modal-venue-name');
   if (titleEl) titleEl.textContent = venueName;
@@ -2681,7 +2684,7 @@ async function executeAdminResetHaccp() {
     return;
   }
 
-  const vId = activeVenueId || (currentVenues && currentVenues[0] ? currentVenues[0].id : 1);
+  const vId = activeVenueId || 1;
   const chkBoth = document.getElementById('chk-reset-both-venues');
   const resetBoth = chkBoth ? chkBoth.checked : false;
 
