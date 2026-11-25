@@ -286,10 +286,10 @@
           <!-- Pulsanti d'azione superiori -->
           <div class="flex items-center space-x-2 sm:space-x-3">
             
-            <!-- Torna alle sezioni -->
-            <button onclick="navigateToChooseSection()" class="px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center space-x-1.5 transition-colors">
-              <i data-lucide="layout-grid" class="w-4 h-4 text-slate-500"></i>
-              <span class="hidden sm:inline">Torna alle sezioni</span>
+            <!-- Torna alla scelta macro-sezione (Fatture / HACCP) -->
+            <button onclick="navigateToChooseSection()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 border border-slate-300 flex items-center space-x-1.5 transition-colors cursor-pointer shadow-xs active:scale-95" title="Torna alla scelta tra Fatture e HACCP">
+              <i data-lucide="layout-grid" class="w-4 h-4 text-slate-600"></i>
+              <span>Cambia Sezione</span>
             </button>
 
             <!-- Cambia locale (visibile per chi accede a entrambi) -->
@@ -313,64 +313,9 @@
 
         </div>
 
-        <!-- Riga 2: Tab Navigazione Specifici per la Sezione Attiva -->
-        <!-- Sotto-tab Fatture e Prezzi -->
-        <nav id="nav-tabs-invoices" class="flex space-x-6 -mb-px hidden">
-          <button onclick="switchInvoicesTab('analytics')" id="tab-btn-analytics" class="tab-link py-3 px-1 border-b-2 font-semibold text-sm flex items-center space-x-2 border-indigo-600 text-indigo-600">
-            <i data-lucide="trending-up" class="w-4 h-4"></i>
-            <span>Analisi Acquisti</span>
-          </button>
-          <button onclick="switchInvoicesTab('invoices')" id="tab-btn-invoices" class="tab-link py-3 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800">
-            <i data-lucide="file-text" class="w-4 h-4"></i>
-            <span>Fatture</span>
-            <span id="nav-count-invoices" class="ml-1.5 px-2 py-0.5 text-xs rounded-full bg-slate-100 text-slate-600">0</span>
-          </button>
-          <button onclick="switchInvoicesTab('unassigned')" id="tab-btn-unassigned" class="tab-link py-3 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800">
-            <i data-lucide="alert-circle" class="w-4 h-4"></i>
-            <span>Da Assegnare</span>
-            <span id="nav-count-unassigned" class="ml-1.5 px-2 py-0.5 text-xs rounded-full bg-rose-100 text-rose-700 font-bold hidden">0</span>
-          </button>
-          <button onclick="switchInvoicesTab('settings')" id="tab-btn-settings" class="tab-link py-3 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800">
-            <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
-            <span>Configurazione &amp; Sedi</span>
-          </button>
-        </nav>
-
-        <!-- Sotto-tab HACCP (Tablet-Friendly) -->
-        <nav id="nav-tabs-haccp" class="flex space-x-2 sm:space-x-4 -mb-px overflow-x-auto pb-1 hidden">
-          <button onclick="switchHaccpTab('labels')" id="tab-btn-haccp-labels" class="haccp-tab-link py-3 px-2 sm:px-3 border-b-2 font-bold text-sm flex items-center space-x-2 border-emerald-600 text-emerald-700 flex-shrink-0">
-            <i data-lucide="tag" class="w-4 h-4"></i>
-            <span>🏷️ Etichette Alimenti</span>
-          </button>
-          <button onclick="switchHaccpTab('temp')" id="tab-btn-haccp-temp" class="haccp-tab-link py-3 px-2 sm:px-3 border-b-2 font-semibold text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800 flex-shrink-0">
-            <i data-lucide="thermometer-snowflake" class="w-4 h-4"></i>
-            <span>❄️ Temperature Frigo</span>
-          </button>
-          <button onclick="switchHaccpTab('oil')" id="tab-btn-haccp-oil" class="haccp-tab-link py-3 px-2 sm:px-3 border-b-2 font-semibold text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800 flex-shrink-0">
-            <i data-lucide="flame" class="w-4 h-4"></i>
-            <span>🍟 Cambio Olio</span>
-          </button>
-          <button onclick="switchHaccpTab('hood')" id="tab-btn-haccp-hood" class="haccp-tab-link py-3 px-2 sm:px-3 border-b-2 font-semibold text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800 flex-shrink-0">
-            <i data-lucide="fan" class="w-4 h-4"></i>
-            <span>💨 Pulizia Cappa</span>
-          </button>
-          <button onclick="switchHaccpTab('cleaning_walls')" id="tab-btn-haccp-cleaning_walls" class="haccp-tab-link py-3 px-2 sm:px-3 border-b-2 font-semibold text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800 flex-shrink-0">
-            <i data-lucide="layers" class="w-4 h-4"></i>
-            <span>🧱 Pulizia Muri</span>
-          </button>
-          <button onclick="switchHaccpTab('cleaning_windows')" id="tab-btn-haccp-cleaning_windows" class="haccp-tab-link py-3 px-2 sm:px-3 border-b-2 font-semibold text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800 flex-shrink-0">
-            <i data-lucide="sparkles" class="w-4 h-4"></i>
-            <span>🪟 Pulizia Vetri</span>
-          </button>
-          <button onclick="switchHaccpTab('cleaning_warehouse')" id="tab-btn-haccp-cleaning_warehouse" class="haccp-tab-link py-3 px-2 sm:px-3 border-b-2 font-semibold text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800 flex-shrink-0">
-            <i data-lucide="package" class="w-4 h-4"></i>
-            <span>📦 Pulizia Magazzino</span>
-          </button>
-          <button onclick="switchHaccpTab('pests')" id="tab-btn-haccp-pests" class="haccp-tab-link py-3 px-2 sm:px-3 border-b-2 font-semibold text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800 flex-shrink-0">
-            <i data-lucide="shield-alert" class="w-4 h-4"></i>
-            <span>🐜 Monitoraggio Infestanti</span>
-          </button>
-        </nav>
+        <!-- Contenitori tab legacy nascosti (gestione sostituita dai pulsanti dell'hub) -->
+        <nav id="nav-tabs-invoices" class="hidden"></nav>
+        <nav id="nav-tabs-haccp" class="hidden"></nav>
 
       </div>
     </header>
@@ -386,28 +331,117 @@
       <!-- ======================================================== -->
       <div id="section-invoices-content" class="space-y-6 hidden">
         
-        <!-- Header Azioni Sezione Fatture -->
-        <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-          <div>
-            <h2 class="text-lg font-bold text-slate-900">Fatture e Controllo Prezzi</h2>
-            <p class="text-xs text-slate-500">Analisi prezzi medi ponderati, minimo e massimo ultimi sei mesi per <span id="invoices-venue-label" class="font-bold text-slate-800">Krügel – Lavis</span></p>
+        <!-- 1.0 HUB PRINCIPALE FATTURE (GRIGLIA A PULSANTI/TESSERE) -->
+        <div id="invoices-hub-view" class="space-y-6">
+          <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+            <div>
+              <h2 class="text-xl font-black text-slate-900">Menù Fatture e Controllo Prezzi</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Analisi acquisti, archivio fatture elettroniche e smistamento per <span id="invoices-venue-label" class="font-bold text-slate-800">Krügel – Lavis</span></p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <!-- Pulsante Importa XML / ZIP (condizionato da permesso fatture.import) -->
+              <button id="btn-open-upload-modal" onclick="openUploadModal()" class="inline-flex items-center space-x-1.5 px-4 py-2.5 text-xs font-bold rounded-xl text-white bg-slate-900 hover:bg-slate-800 shadow-sm transition-all cursor-pointer hidden">
+                <i data-lucide="upload" class="w-4 h-4"></i>
+                <span>Importa XML / ZIP</span>
+              </button>
+              <!-- Dati demo (riservato admin) -->
+              <button id="btn-load-demo" onclick="loadDemoData()" class="inline-flex items-center space-x-1.5 px-3.5 py-2.5 text-xs font-semibold rounded-xl text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer hidden">
+                <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
+                <span>Dati Demo</span>
+              </button>
+            </div>
           </div>
-          <div class="flex items-center space-x-2">
-            <!-- Pulsante Importa XML / ZIP (condizionato da permesso fatture.import) -->
-            <button id="btn-open-upload-modal" onclick="openUploadModal()" class="inline-flex items-center space-x-1.5 px-3.5 py-2 text-xs font-bold rounded-xl text-white bg-slate-900 hover:bg-slate-800 shadow-sm transition-all hidden">
-              <i data-lucide="upload" class="w-4 h-4"></i>
-              <span>Importa XML / ZIP</span>
-            </button>
-            <!-- Dati demo (riservato admin) -->
-            <button id="btn-load-demo" onclick="loadDemoData()" class="inline-flex items-center space-x-1.5 px-3 py-2 text-xs font-semibold rounded-xl text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors hidden">
-              <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
-              <span>Dati Demo</span>
-            </button>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+            <!-- Card 1: Analisi Acquisti -->
+            <div id="invoices-card-analytics" onclick="openInvoicesFunction('analytics')" class="bg-white p-5 rounded-2xl border-2 border-slate-200 hover:border-indigo-600 hover:shadow-xl transition-all cursor-pointer group flex flex-col justify-between active:scale-[0.98]">
+              <div>
+                <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white flex items-center justify-center transition-all mb-3 text-2xl shadow-xs">
+                  📊
+                </div>
+                <h3 class="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">Analisi Acquisti</h3>
+                <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                  Grafici andamento spese per categoria, fornitori, prezzi medi ponderati, minimi e massimi.
+                </p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-indigo-600">
+                <span>Apri analisi</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </div>
+
+            <!-- Card 2: Archivio Fatture -->
+            <div id="invoices-card-invoices" onclick="openInvoicesFunction('invoices')" class="bg-white p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 hover:shadow-xl transition-all cursor-pointer group flex flex-col justify-between active:scale-[0.98]">
+              <div>
+                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white flex items-center justify-center transition-all mb-3 text-2xl shadow-xs">
+                  📑
+                </div>
+                <div class="flex items-center justify-between">
+                  <h3 class="text-base font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">Archivio Fatture</h3>
+                  <span id="nav-count-invoices" class="px-2 py-0.5 text-xs rounded-full bg-slate-100 text-slate-600 font-bold">0</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                  Consultazione fatture fornitori, dettagli documento, righe merci e totali importi.
+                </p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-emerald-600">
+                <span>Apri archivio</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </div>
+
+            <!-- Card 3: Righe da Assegnare -->
+            <div id="invoices-card-unassigned" onclick="openInvoicesFunction('unassigned')" class="bg-white p-5 rounded-2xl border-2 border-slate-200 hover:border-amber-600 hover:shadow-xl transition-all cursor-pointer group flex flex-col justify-between active:scale-[0.98]">
+              <div>
+                <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 group-hover:bg-amber-600 group-hover:text-white flex items-center justify-center transition-all mb-3 text-2xl shadow-xs">
+                  ⚠️
+                </div>
+                <div class="flex items-center justify-between">
+                  <h3 class="text-base font-bold text-slate-900 group-hover:text-amber-700 transition-colors">Da Assegnare</h3>
+                  <span id="nav-count-unassigned" class="px-2 py-0.5 text-xs rounded-full bg-rose-100 text-rose-700 font-bold hidden">0</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                  Smistamento rapido righe merci senza sede assegnata tra Krügel – Lavis e Pergine.
+                </p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-amber-600">
+                <span>Apri assegnazioni</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </div>
+
+            <!-- Card 4: Configurazione & Sedi -->
+            <div id="invoices-card-settings" onclick="openInvoicesFunction('settings')" class="bg-white p-5 rounded-2xl border-2 border-slate-200 hover:border-slate-600 hover:shadow-xl transition-all cursor-pointer group flex flex-col justify-between active:scale-[0.98]">
+              <div>
+                <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 group-hover:bg-slate-700 group-hover:text-white flex items-center justify-center transition-all mb-3 text-2xl shadow-xs">
+                  ⚙️
+                </div>
+                <h3 class="text-base font-bold text-slate-900 group-hover:text-slate-800 transition-colors">Configurazione & Sedi</h3>
+                <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                  Regole di conversione confezioni, mappatura anagrafiche prodotti e parametri.
+                </p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-700">
+                <span>Apri configurazione</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- 1.1 VISTA ANALISI ACQUISTI -->
-        <div id="invoices-subview-analytics" class="space-y-6">
+        <div id="invoices-subview-analytics" class="space-y-6 hidden">
+          <div class="flex items-center justify-between bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+            <button onclick="backToInvoicesHub()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 border border-slate-300 flex items-center space-x-2 transition-all cursor-pointer shadow-xs active:scale-95">
+              <i data-lucide="arrow-left" class="w-4 h-4 text-slate-600"></i>
+              <span>← Torna al Menù Fatture</span>
+            </button>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Fatture</span>
+              <span class="text-slate-300">•</span>
+              <span class="text-sm font-extrabold text-indigo-700">📊 Analisi Acquisti &amp; Statistiche</span>
+            </div>
+          </div>
           <!-- Top KPI Cards -->
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
@@ -502,6 +536,17 @@
 
         <!-- 1.2 VISTA FATTURE -->
         <div id="invoices-subview-invoices" class="space-y-6 hidden">
+          <div class="flex items-center justify-between bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+            <button onclick="backToInvoicesHub()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 border border-slate-300 flex items-center space-x-2 transition-all cursor-pointer shadow-xs active:scale-95">
+              <i data-lucide="arrow-left" class="w-4 h-4 text-slate-600"></i>
+              <span>← Torna al Menù Fatture</span>
+            </button>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Fatture</span>
+              <span class="text-slate-300">•</span>
+              <span class="text-sm font-extrabold text-emerald-700">📑 Archivio Fatture Fornitori</span>
+            </div>
+          </div>
           <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
             <div class="flex flex-wrap items-center gap-3">
               <div class="relative w-64">
@@ -550,6 +595,17 @@
 
         <!-- 1.3 VISTA DA ASSEGNARE -->
         <div id="invoices-subview-unassigned" class="space-y-6 hidden">
+          <div class="flex items-center justify-between bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+            <button onclick="backToInvoicesHub()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 border border-slate-300 flex items-center space-x-2 transition-all cursor-pointer shadow-xs active:scale-95">
+              <i data-lucide="arrow-left" class="w-4 h-4 text-slate-600"></i>
+              <span>← Torna al Menù Fatture</span>
+            </button>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Fatture</span>
+              <span class="text-slate-300">•</span>
+              <span class="text-sm font-extrabold text-amber-700">⚠️ Righe Merci da Assegnare</span>
+            </div>
+          </div>
           <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start space-x-3 text-xs text-amber-800">
             <i data-lucide="help-circle" class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5"></i>
             <div>
@@ -605,6 +661,17 @@
 
         <!-- 1.4 VISTA CONFIGURAZIONE FATTURE & SEDI -->
         <div id="invoices-subview-settings" class="space-y-6 hidden">
+          <div class="flex items-center justify-between bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+            <button onclick="backToInvoicesHub()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 border border-slate-300 flex items-center space-x-2 transition-all cursor-pointer shadow-xs active:scale-95">
+              <i data-lucide="arrow-left" class="w-4 h-4 text-slate-600"></i>
+              <span>← Torna al Menù Fatture</span>
+            </button>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Fatture</span>
+              <span class="text-slate-300">•</span>
+              <span class="text-sm font-extrabold text-slate-800">⚙️ Configurazione &amp; Sedi</span>
+            </div>
+          </div>
           <!-- Sedi & Regole -->
           <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
             <h3 class="text-base font-bold text-slate-900">Sedi di Consegna Configurate</h3>
@@ -674,8 +741,172 @@
           <!-- Popolato dinamicamente da updateHaccpAlerts() -->
         </div>
 
+        <!-- 2.0 HUB PRINCIPALE HACCP (GRIGLIA A PULSANTI/TESSERE) -->
+        <div id="haccp-hub-view" class="space-y-6">
+          <div class="flex items-center justify-between bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+            <div>
+              <h2 class="text-xl font-black text-slate-900">Menù Autocontrollo HACCP</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Seleziona una funzione per registrare i controlli o visualizzare lo storico</p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-bold px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200">
+                Tablet &amp; Touch Friendly
+              </span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+            <!-- Card 1: Etichette Alimenti -->
+            <div id="haccp-card-labels" onclick="openHaccpFunction('labels')" class="bg-white p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 hover:shadow-xl transition-all cursor-pointer group flex flex-col justify-between active:scale-[0.98]">
+              <div>
+                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white flex items-center justify-center transition-all mb-3 text-2xl shadow-xs">
+                  🏷️
+                </div>
+                <h3 class="text-base font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">Etichette Alimenti</h3>
+                <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                  Lotti preparazioni, calcolo automatico scadenze 48h/72h e stampa termica 60x40mm.
+                </p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-emerald-600">
+                <span>Apri etichette</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </div>
+
+            <!-- Card 2: Temperature Frigoriferi -->
+            <div id="haccp-card-temp" onclick="openHaccpFunction('temp')" class="bg-white p-5 rounded-2xl border-2 border-slate-200 hover:border-cyan-500 hover:shadow-xl transition-all cursor-pointer group flex flex-col justify-between active:scale-[0.98]">
+              <div>
+                <div class="w-12 h-12 rounded-xl bg-cyan-50 text-cyan-600 group-hover:bg-cyan-600 group-hover:text-white flex items-center justify-center transition-all mb-3 text-2xl shadow-xs">
+                  ❄️
+                </div>
+                <h3 class="text-base font-bold text-slate-900 group-hover:text-cyan-700 transition-colors">Temperature Frigo</h3>
+                <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                  Rilevazione giornaliera temperature di celle e banchi con verifica range conformi.
+                </p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-cyan-600">
+                <span>Apri temperature</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </div>
+
+            <!-- Card 3: Cambio Olio Friggitrici -->
+            <div id="haccp-card-oil" onclick="openHaccpFunction('oil')" class="bg-white p-5 rounded-2xl border-2 border-slate-200 hover:border-amber-500 hover:shadow-xl transition-all cursor-pointer group flex flex-col justify-between active:scale-[0.98]">
+              <div>
+                <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 group-hover:bg-amber-600 group-hover:text-white flex items-center justify-center transition-all mb-3 text-2xl shadow-xs">
+                  🍟
+                </div>
+                <h3 class="text-base font-bold text-slate-900 group-hover:text-amber-700 transition-colors">Cambio Olio Friggitrici</h3>
+                <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                  Monitoraggio giorni d'uso e registro sostituzione olio per ciascuna delle friggitrici attive.
+                </p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-amber-600">
+                <span>Apri cambio olio</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </div>
+
+            <!-- Card 4: Pulizia Settimanale Cappa -->
+            <div id="haccp-card-hood" onclick="openHaccpFunction('hood')" class="bg-white p-5 rounded-2xl border-2 border-slate-200 hover:border-indigo-500 hover:shadow-xl transition-all cursor-pointer group flex flex-col justify-between active:scale-[0.98]">
+              <div>
+                <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white flex items-center justify-center transition-all mb-3 text-2xl shadow-xs">
+                  💨
+                </div>
+                <h3 class="text-base font-bold text-slate-900 group-hover:text-indigo-700 transition-colors">Pulizia Cappa</h3>
+                <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                  Controllo settimanale sgrassaggio filtri e impianto aspirazione fumi della cucina.
+                </p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-indigo-600">
+                <span>Apri pulizia cappa</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </div>
+
+            <!-- Card 5: Pulizia Muri e Pareti -->
+            <div id="haccp-card-cleaning_walls" onclick="openHaccpFunction('cleaning_walls')" class="bg-white p-5 rounded-2xl border-2 border-slate-200 hover:border-violet-500 hover:shadow-xl transition-all cursor-pointer group flex flex-col justify-between active:scale-[0.98]">
+              <div>
+                <div class="w-12 h-12 rounded-xl bg-violet-50 text-violet-600 group-hover:bg-violet-600 group-hover:text-white flex items-center justify-center transition-all mb-3 text-2xl shadow-xs">
+                  🧱
+                </div>
+                <h3 class="text-base font-bold text-slate-900 group-hover:text-violet-700 transition-colors">Pulizia Muri</h3>
+                <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                  Sanificazione periodica mensile di pareti piastrellate e superfici lavabili dei locali.
+                </p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-violet-600">
+                <span>Apri registro muri</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </div>
+
+            <!-- Card 6: Pulizia Vetri e Infissi -->
+            <div id="haccp-card-cleaning_windows" onclick="openHaccpFunction('cleaning_windows')" class="bg-white p-5 rounded-2xl border-2 border-slate-200 hover:border-blue-500 hover:shadow-xl transition-all cursor-pointer group flex flex-col justify-between active:scale-[0.98]">
+              <div>
+                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white flex items-center justify-center transition-all mb-3 text-2xl shadow-xs">
+                  🪟
+                </div>
+                <h3 class="text-base font-bold text-slate-900 group-hover:text-blue-700 transition-colors">Pulizia Vetri</h3>
+                <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                  Lavaggio finestre, vetrate e zanzariere con cadenza mensile programmata.
+                </p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-blue-600">
+                <span>Apri registro vetri</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </div>
+
+            <!-- Card 7: Pulizia Magazzino e Scorte -->
+            <div id="haccp-card-cleaning_warehouse" onclick="openHaccpFunction('cleaning_warehouse')" class="bg-white p-5 rounded-2xl border-2 border-slate-200 hover:border-teal-500 hover:shadow-xl transition-all cursor-pointer group flex flex-col justify-between active:scale-[0.98]">
+              <div>
+                <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 group-hover:bg-teal-600 group-hover:text-white flex items-center justify-center transition-all mb-3 text-2xl shadow-xs">
+                  📦
+                </div>
+                <h3 class="text-base font-bold text-slate-900 group-hover:text-teal-700 transition-colors">Pulizia Magazzino</h3>
+                <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                  Igienizzazione scaffalature, pavimenti dispensa e rotazione settimanale scorte.
+                </p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-teal-600">
+                <span>Apri magazzino</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </div>
+
+            <!-- Card 8: Monitoraggio Infestanti -->
+            <div id="haccp-card-pests" onclick="openHaccpFunction('pests')" class="bg-white p-5 rounded-2xl border-2 border-slate-200 hover:border-rose-500 hover:shadow-xl transition-all cursor-pointer group flex flex-col justify-between active:scale-[0.98]">
+              <div>
+                <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 group-hover:bg-rose-600 group-hover:text-white flex items-center justify-center transition-all mb-3 text-2xl shadow-xs">
+                  🐜
+                </div>
+                <h3 class="text-base font-bold text-slate-900 group-hover:text-rose-700 transition-colors">Monitoraggio Infestanti</h3>
+                <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                  Controllo periodico trappole rodenticidi e lampade insetti con esito di conformità.
+                </p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-rose-600">
+                <span>Apri infestanti</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- 2.1 TAB ETICHETTE ALIMENTI -->
-        <div id="haccp-subview-labels" class="space-y-6">
+        <div id="haccp-subview-labels" class="space-y-6 hidden">
+          <div class="flex items-center justify-between bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+            <button onclick="backToHaccpHub()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 border border-slate-300 flex items-center space-x-2 transition-all cursor-pointer shadow-xs active:scale-95">
+              <i data-lucide="arrow-left" class="w-4 h-4 text-slate-600"></i>
+              <span>← Torna al Menù HACCP</span>
+            </button>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">HACCP</span>
+              <span class="text-slate-300">•</span>
+              <span class="text-sm font-extrabold text-emerald-800">🏷️ Etichette Alimenti &amp; Lotti</span>
+            </div>
+          </div>
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             <!-- Modulo Compilazione Etichetta (Tablet Friendly) -->
@@ -911,6 +1142,17 @@
 
         <!-- 2.2 TAB TEMPERATURE FRIGORIFERI -->
         <div id="haccp-subview-temp" class="space-y-6 hidden">
+          <div class="flex items-center justify-between bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+            <button onclick="backToHaccpHub()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 border border-slate-300 flex items-center space-x-2 transition-all cursor-pointer shadow-xs active:scale-95">
+              <i data-lucide="arrow-left" class="w-4 h-4 text-slate-600"></i>
+              <span>← Torna al Menù HACCP</span>
+            </button>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">HACCP</span>
+              <span class="text-slate-300">•</span>
+              <span class="text-sm font-extrabold text-cyan-700">❄️ Temperature Frigoriferi</span>
+            </div>
+          </div>
           <!-- Avviso tab-specifico per frigoriferi scaduti -->
           <div id="tab-alert-temp" class="hidden"></div>
 
@@ -1021,6 +1263,17 @@
 
         <!-- 2.3 TAB CAMBIO OLIO FRIGGITRICI -->
         <div id="haccp-subview-oil" class="space-y-6 hidden">
+          <div class="flex items-center justify-between bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+            <button onclick="backToHaccpHub()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 border border-slate-300 flex items-center space-x-2 transition-all cursor-pointer shadow-xs active:scale-95">
+              <i data-lucide="arrow-left" class="w-4 h-4 text-slate-600"></i>
+              <span>← Torna al Menù HACCP</span>
+            </button>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">HACCP</span>
+              <span class="text-slate-300">•</span>
+              <span class="text-sm font-extrabold text-amber-700">🍟 Cambio Olio Friggitrici</span>
+            </div>
+          </div>
           <!-- Avviso tab-specifico per friggitrici scadute -->
           <div id="tab-alert-oil" class="hidden"></div>
 
@@ -1062,6 +1315,17 @@
 
         <!-- 2.4 TAB PULIZIA SETTIMANALE CAPPA -->
         <div id="haccp-subview-hood" class="space-y-6 hidden">
+          <div class="flex items-center justify-between bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+            <button onclick="backToHaccpHub()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 border border-slate-300 flex items-center space-x-2 transition-all cursor-pointer shadow-xs active:scale-95">
+              <i data-lucide="arrow-left" class="w-4 h-4 text-slate-600"></i>
+              <span>← Torna al Menù HACCP</span>
+            </button>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">HACCP</span>
+              <span class="text-slate-300">•</span>
+              <span class="text-sm font-extrabold text-indigo-700">💨 Pulizia Cappa Aspirazione</span>
+            </div>
+          </div>
           <!-- Avviso tab-specifico per pulizia cappa scaduta -->
           <div id="tab-alert-hood" class="hidden"></div>
 
@@ -1105,6 +1369,17 @@
 
         <!-- 2.5 TAB PULIZIA MURI -->
         <div id="haccp-subview-cleaning_walls" class="space-y-6 hidden">
+          <div class="flex items-center justify-between bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+            <button onclick="backToHaccpHub()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 border border-slate-300 flex items-center space-x-2 transition-all cursor-pointer shadow-xs active:scale-95">
+              <i data-lucide="arrow-left" class="w-4 h-4 text-slate-600"></i>
+              <span>← Torna al Menù HACCP</span>
+            </button>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">HACCP</span>
+              <span class="text-slate-300">•</span>
+              <span class="text-sm font-extrabold text-violet-700">🧱 Pulizia Muri &amp; Pareti</span>
+            </div>
+          </div>
           <!-- Avviso tab-specifico muri -->
           <div id="tab-alert-cleaning_walls" class="hidden"></div>
 
@@ -1164,6 +1439,17 @@
 
         <!-- 2.6 TAB PULIZIA VETRI -->
         <div id="haccp-subview-cleaning_windows" class="space-y-6 hidden">
+          <div class="flex items-center justify-between bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+            <button onclick="backToHaccpHub()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 border border-slate-300 flex items-center space-x-2 transition-all cursor-pointer shadow-xs active:scale-95">
+              <i data-lucide="arrow-left" class="w-4 h-4 text-slate-600"></i>
+              <span>← Torna al Menù HACCP</span>
+            </button>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">HACCP</span>
+              <span class="text-slate-300">•</span>
+              <span class="text-sm font-extrabold text-blue-700">🪟 Pulizia Vetri &amp; Infissi</span>
+            </div>
+          </div>
           <!-- Avviso tab-specifico vetri -->
           <div id="tab-alert-cleaning_windows" class="hidden"></div>
 
@@ -1223,6 +1509,17 @@
 
         <!-- 2.7 TAB PULIZIA MAGAZZINO -->
         <div id="haccp-subview-cleaning_warehouse" class="space-y-6 hidden">
+          <div class="flex items-center justify-between bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+            <button onclick="backToHaccpHub()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 border border-slate-300 flex items-center space-x-2 transition-all cursor-pointer shadow-xs active:scale-95">
+              <i data-lucide="arrow-left" class="w-4 h-4 text-slate-600"></i>
+              <span>← Torna al Menù HACCP</span>
+            </button>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">HACCP</span>
+              <span class="text-slate-300">•</span>
+              <span class="text-sm font-extrabold text-teal-700">📦 Pulizia Magazzino &amp; Scorte</span>
+            </div>
+          </div>
           <!-- Avviso tab-specifico magazzino -->
           <div id="tab-alert-cleaning_warehouse" class="hidden"></div>
 
@@ -1282,6 +1579,17 @@
 
         <!-- 2.8 TAB MONITORAGGIO INFESTANTI -->
         <div id="haccp-subview-pests" class="space-y-6 hidden">
+          <div class="flex items-center justify-between bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+            <button onclick="backToHaccpHub()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 border border-slate-300 flex items-center space-x-2 transition-all cursor-pointer shadow-xs active:scale-95">
+              <i data-lucide="arrow-left" class="w-4 h-4 text-slate-600"></i>
+              <span>← Torna al Menù HACCP</span>
+            </button>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">HACCP</span>
+              <span class="text-slate-300">•</span>
+              <span class="text-sm font-extrabold text-rose-700">🐜 Monitoraggio Infestanti</span>
+            </div>
+          </div>
           <!-- Avviso tab-specifico infestanti -->
           <div id="tab-alert-pests" class="hidden"></div>
 
@@ -2121,6 +2429,6 @@
   </div>
 
   <!-- Scripts (con parametro versione per forzare il refresh della cache browser) -->
-  <script src="/static/js/app.js?v=20261121_modal_reset_v7"></script>
+  <script src="/static/js/app.js?v=20261125_hub_navigation_v8"></script>
 </body>
 </html>

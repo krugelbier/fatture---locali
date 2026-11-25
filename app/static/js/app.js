@@ -458,90 +458,155 @@ function enterSection(sectionName) {
   if (currentUser.is_admin) btnManageUsers.classList.remove('hidden');
   else btnManageUsers.classList.add('hidden');
 
+  // Nasconde i vecchi nav tabs a scorrimento
+  const navInv = document.getElementById('nav-tabs-invoices');
+  if (navInv) navInv.classList.add('hidden');
+  const navHaccp = document.getElementById('nav-tabs-haccp');
+  if (navHaccp) navHaccp.classList.add('hidden');
+
   if (sectionName === 'invoices') {
-    document.getElementById('nav-tabs-invoices').classList.remove('hidden');
-    document.getElementById('nav-tabs-haccp').classList.add('hidden');
     document.getElementById('section-invoices-content').classList.remove('hidden');
     document.getElementById('section-haccp-content').classList.add('hidden');
-
     document.getElementById('invoices-venue-label').textContent = venueName;
 
     // Controlla permessi per bottoni fatture
     const btnUpload = document.getElementById('btn-open-upload-modal');
-    if (userHasPermission('fatture.import')) btnUpload.classList.remove('hidden');
-    else btnUpload.classList.add('hidden');
+    if (btnUpload) {
+      if (userHasPermission('fatture.import')) btnUpload.classList.remove('hidden');
+      else btnUpload.classList.add('hidden');
+    }
 
     const btnDemo = document.getElementById('btn-load-demo');
-    if (currentUser.is_admin) btnDemo.classList.remove('hidden');
-    else btnDemo.classList.add('hidden');
+    if (btnDemo) {
+      if (currentUser && currentUser.is_admin) btnDemo.classList.remove('hidden');
+      else btnDemo.classList.add('hidden');
+    }
 
-    switchInvoicesTab('analytics');
+    backToInvoicesHub();
   } else {
-    document.getElementById('nav-tabs-invoices').classList.add('hidden');
-    document.getElementById('nav-tabs-haccp').classList.remove('hidden');
     document.getElementById('section-invoices-content').classList.add('hidden');
     document.getElementById('section-haccp-content').classList.remove('hidden');
 
-    // Filtra schede HACCP visibili in base ai permessi
-    const canLabels = userHasAnyPermission(['haccp.labels.view', 'haccp.labels.create', 'haccp.labels.print']);
-    const canTemp = userHasAnyPermission(['haccp.temp.view', 'haccp.temp.record', 'haccp.temp.manage']);
-    const canOil = userHasAnyPermission(['haccp.oil.view', 'haccp.oil.record', 'haccp.oil.manage']);
-    const canHood = userHasAnyPermission(['haccp.hood.view', 'haccp.hood.record']);
-    const canWalls = userHasAnyPermission(['haccp.cleaning.walls.view', 'haccp.cleaning.walls.record']);
-    const canWindows = userHasAnyPermission(['haccp.cleaning.windows.view', 'haccp.cleaning.windows.record']);
-    const canWarehouse = userHasAnyPermission(['haccp.cleaning.warehouse.view', 'haccp.cleaning.warehouse.record']);
-    const canPests = userHasAnyPermission(['haccp.pests.view', 'haccp.pests.record']);
-
-    const btnLabels = document.getElementById('tab-btn-haccp-labels');
-    const btnTemp = document.getElementById('tab-btn-haccp-temp');
-    const btnOil = document.getElementById('tab-btn-haccp-oil');
-    const btnHood = document.getElementById('tab-btn-haccp-hood');
-    const btnWalls = document.getElementById('tab-btn-haccp-cleaning_walls');
-    const btnWindows = document.getElementById('tab-btn-haccp-cleaning_windows');
-    const btnWarehouse = document.getElementById('tab-btn-haccp-cleaning_warehouse');
-    const btnPests = document.getElementById('tab-btn-haccp-pests');
-
-    if (btnLabels) { if (canLabels) btnLabels.classList.remove('hidden'); else btnLabels.classList.add('hidden'); }
-    if (btnTemp) { if (canTemp) btnTemp.classList.remove('hidden'); else btnTemp.classList.add('hidden'); }
-    if (btnOil) { if (canOil) btnOil.classList.remove('hidden'); else btnOil.classList.add('hidden'); }
-    if (btnHood) { if (canHood) btnHood.classList.remove('hidden'); else btnHood.classList.add('hidden'); }
-    if (btnWalls) { if (canWalls) btnWalls.classList.remove('hidden'); else btnWalls.classList.add('hidden'); }
-    if (btnWindows) { if (canWindows) btnWindows.classList.remove('hidden'); else btnWindows.classList.add('hidden'); }
-    if (btnWarehouse) { if (canWarehouse) btnWarehouse.classList.remove('hidden'); else btnWarehouse.classList.add('hidden'); }
-    if (btnPests) { if (canPests) btnPests.classList.remove('hidden'); else btnPests.classList.add('hidden'); }
-
-    // Carica avvisi scaduti HACCP per il locale e avvia polling periodico
-    loadHaccpAlerts();
     if (alertsPollingTimer) clearInterval(alertsPollingTimer);
     alertsPollingTimer = setInterval(loadHaccpAlerts, 30000);
 
-    // Seleziona la prima scheda consentita
-    if (canLabels) switchHaccpTab('labels');
-    else if (canTemp) switchHaccpTab('temp');
-    else if (canOil) switchHaccpTab('oil');
-    else if (canHood) switchHaccpTab('hood');
-    else if (canWalls) switchHaccpTab('cleaning_walls');
-    else if (canWindows) switchHaccpTab('cleaning_windows');
-    else if (canWarehouse) switchHaccpTab('cleaning_warehouse');
-    else if (canPests) switchHaccpTab('pests');
+    backToHaccpHub();
   }
 
   lucide.createIcons();
 }
 
+/**
+ * Gestione navigazione a tessere (Hub) per HACCP
+ */
+function openHaccpFunction(tab) {
+  const hub = document.getElementById('haccp-hub-view');
+  if (hub) hub.classList.add('hidden');
+
+  switchHaccpTab(tab);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function backToHaccpHub() {
+  const allHaccpTabs = ['labels', 'temp', 'oil', 'hood', 'cleaning_walls', 'cleaning_windows', 'cleaning_warehouse', 'pests'];
+  allHaccpTabs.forEach(t => {
+    const view = document.getElementById(`haccp-subview-${t}`);
+    if (view) view.classList.add('hidden');
+  });
+
+  const hub = document.getElementById('haccp-hub-view');
+  if (hub) hub.classList.remove('hidden');
+
+  updateHaccpHubCardPermissions();
+  loadHaccpAlerts();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+}
+
+function updateHaccpHubCardPermissions() {
+  const permMap = {
+    'haccp-card-labels': ['haccp.labels.view', 'haccp.labels.create', 'haccp.labels.print'],
+    'haccp-card-temp': ['haccp.temp.view', 'haccp.temp.record', 'haccp.temp.manage'],
+    'haccp-card-oil': ['haccp.oil.view', 'haccp.oil.record', 'haccp.oil.manage'],
+    'haccp-card-hood': ['haccp.hood.view', 'haccp.hood.record'],
+    'haccp-card-cleaning_walls': ['haccp.cleaning.walls.view', 'haccp.cleaning.walls.record'],
+    'haccp-card-cleaning_windows': ['haccp.cleaning.windows.view', 'haccp.cleaning.windows.record'],
+    'haccp-card-cleaning_warehouse': ['haccp.cleaning.warehouse.view', 'haccp.cleaning.warehouse.record'],
+    'haccp-card-pests': ['haccp.pests.view', 'haccp.pests.record'],
+  };
+  Object.keys(permMap).forEach(cardId => {
+    const el = document.getElementById(cardId);
+    if (el) {
+      const allowed = !currentUser || currentUser.is_admin || userHasAnyPermission(permMap[cardId]);
+      if (allowed) el.classList.remove('hidden');
+      else el.classList.add('hidden');
+    }
+  });
+}
+
+/**
+ * Gestione navigazione a tessere (Hub) per Fatture
+ */
+function openInvoicesFunction(tab) {
+  const hub = document.getElementById('invoices-hub-view');
+  if (hub) hub.classList.add('hidden');
+
+  switchInvoicesTab(tab);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function backToInvoicesHub() {
+  ['analytics', 'invoices', 'unassigned', 'settings'].forEach(t => {
+    const view = document.getElementById(`invoices-subview-${t}`);
+    if (view) view.classList.add('hidden');
+  });
+
+  const hub = document.getElementById('invoices-hub-view');
+  if (hub) hub.classList.remove('hidden');
+
+  updateInvoicesHubCardPermissions();
+  if (typeof loadInvoices === 'function') loadInvoices();
+  if (typeof loadUnassigned === 'function') loadUnassigned();
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+}
+
+function updateInvoicesHubCardPermissions() {
+  const permMap = {
+    'invoices-card-analytics': ['fatture.view'],
+    'invoices-card-invoices': ['fatture.view'],
+    'invoices-card-unassigned': ['fatture.manage', 'fatture.assign'],
+    'invoices-card-settings': ['fatture.manage'],
+  };
+  Object.keys(permMap).forEach(cardId => {
+    const el = document.getElementById(cardId);
+    if (el) {
+      const allowed = !currentUser || currentUser.is_admin || userHasAnyPermission(permMap[cardId]);
+      if (allowed) el.classList.remove('hidden');
+      else el.classList.add('hidden');
+    }
+  });
+}
+
 // Switcher Tab Sezione Fatture
 function switchInvoicesTab(tab) {
   currentInvoicesTab = tab;
+  const hub = document.getElementById('invoices-hub-view');
+  if (hub) hub.classList.add('hidden');
+
   if (alertsPollingTimer) { clearInterval(alertsPollingTimer); alertsPollingTimer = null; }
   ['analytics', 'invoices', 'unassigned', 'settings'].forEach(t => {
     const view = document.getElementById(`invoices-subview-${t}`);
     const btn = document.getElementById(`tab-btn-${t}`);
-    if (view && btn) {
+    if (view) {
+      if (t === tab) view.classList.remove('hidden');
+      else view.classList.add('hidden');
+    }
+    if (btn) {
       if (t === tab) {
-        view.classList.remove('hidden');
         btn.className = 'tab-link py-3 px-1 border-b-2 font-semibold text-sm flex items-center space-x-2 border-indigo-600 text-indigo-600';
       } else {
-        view.classList.add('hidden');
         btn.className = 'tab-link py-3 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800';
       }
     }
@@ -558,16 +623,21 @@ function switchInvoicesTab(tab) {
 // Switcher Tab Sezione HACCP
 function switchHaccpTab(tab) {
   currentHaccpTab = tab;
+  const hub = document.getElementById('haccp-hub-view');
+  if (hub) hub.classList.add('hidden');
+
   const allHaccpTabs = ['labels', 'temp', 'oil', 'hood', 'cleaning_walls', 'cleaning_windows', 'cleaning_warehouse', 'pests'];
   allHaccpTabs.forEach(t => {
     const view = document.getElementById(`haccp-subview-${t}`);
     const btn = document.getElementById(`tab-btn-haccp-${t}`);
-    if (view && btn) {
+    if (view) {
+      if (t === tab) view.classList.remove('hidden');
+      else view.classList.add('hidden');
+    }
+    if (btn) {
       if (t === tab) {
-        view.classList.remove('hidden');
         btn.className = 'haccp-tab-link py-3 px-2 sm:px-3 border-b-2 font-bold text-sm flex items-center space-x-2 border-emerald-600 text-emerald-700 flex-shrink-0';
       } else {
-        view.classList.add('hidden');
         btn.className = 'haccp-tab-link py-3 px-2 sm:px-3 border-b-2 font-semibold text-sm flex items-center space-x-2 border-transparent text-slate-500 hover:text-slate-800 flex-shrink-0';
       }
     }
@@ -582,9 +652,7 @@ function switchHaccpTab(tab) {
   else if (tab === 'cleaning_warehouse') loadHaccpCleaning('magazzino');
   else if (tab === 'pests') loadHaccpPests();
 
-  // Ricarica e aggiorna gli avvisi specifici per questa scheda
   renderTabSpecificAlerts();
-
   lucide.createIcons();
 }
 
